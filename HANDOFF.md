@@ -6,8 +6,8 @@ Live status of this project. Any AI assistant: read this first, continue from **
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
 ## Status
-**About 40% done.** Shared lib, overlays, all four transitions and the Boot + Title scenes are written and reviewed. Six scenes left, then the page and the MP4.
-Last updated: 2026-10-27 by v0.
+**About 55% done.** Shared lib, overlays, all four transitions and the Boot, Title, Kinetic Type and Shape scenes are written and reviewed. Four scenes left (generative, depth, montage, finale), then the page and the MP4.
+Last updated: 2026-10-27 by v0 (second account).
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -22,13 +22,14 @@ Last updated: 2026-10-27 by v0.
 - [x] `remotion/transitions/`: `flash.tsx`, `slat-wipe.tsx`, `iris.tsx`, `whip-pan.tsx`, already placed in `showreel.tsx` at the cuts 105 (slat), 165/225/345 (flash), 285 (iris), 375 (whip)
 - [x] `remotion/scenes/boot.tsx` and `remotion/scenes/title.tsx`, reviewed on a contact sheet (frames 6–105 look right; slat wipe fully covers at 105)
 - [x] `remotion/contact-sheet.tsx`: `ContactSheet` composition that renders up to 9 frozen frames in one still (see **Verify**)
+- [x] `remotion/scenes/kinetic-type.tsx` (`KineticType`) and `remotion/scenes/shape.tsx` (`Shape`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 106–215); `pnpm exec tsc --noEmit` passes
 
 ## Next step
 1. New sandbox? Do **Sandbox setup** below first.
-2. Write `remotion/scenes/kinetic-type.tsx` (export `KineticType`) and `remotion/scenes/shape.tsx` (export `Shape`), add both to `SCENE_COMPONENTS` in `remotion/showreel.tsx`, review with the contact sheet (frames 106, 112, 122, 137, 152, 166, 180, 195, 215), fix, then commit and push.
+2. Write `remotion/scenes/generative.tsx` (export `Generative`) and `remotion/scenes/depth.tsx` (export `Depth`), add both to `SCENE_COMPONENTS` in `remotion/showreel.tsx`, review with the contact sheet (frames 226, 236, 248, 258, 270, 290, 305, 320, 338), fix, update this file, then commit and push.
 
 ## Remaining
-- [ ] Scenes in `remotion/scenes/`: kinetic-type, shape, generative, depth, montage, finale
+- [ ] Scenes in `remotion/scenes/`: generative, depth, montage, finale
 - [ ] `components/showreel-player.tsx`, `app/page.tsx`, metadata in `app/layout.tsx`
 - [ ] Review stills and fix problems
 - [ ] Render `public/showreel/showreel.mp4`
@@ -54,6 +55,7 @@ git branch --unset-upstream
 pnpm install
 ```
 Save progress after every milestone: `git add -A && git commit -m "..." && git push kinetic HEAD:main`. The owner approved pushing straight to `main`. If the chat was imported from the kinetic repo directly, `origin` already is kinetic, so just push to it.
+v0 chats imported from the repo: v0's SyncGit tool commits to a `v0/...` branch (it never pushes to `main`), so after each SyncGit also run `git push origin HEAD:main`. A new account's import clones `main`, so `main` must always have the latest work and this file.
 
 ## Starting from an empty scaffold
 Skip this if `package.json` already lists `remotion` 4.0.539 (for example, when the repo was imported from GitHub).
@@ -81,6 +83,8 @@ pnpm exec remotion browser ensure
 - `remotion/lib/fonts.ts`: `ensureFonts()` loads both fonts with `@remotion/fonts`; returns early when `typeof window === "undefined"` (Next SSR has no FontFace)
 - `remotion/overlays/`: `grain.tsx` (feTurbulence at half resolution, new seed per frame, 6.5% opacity), `crop-marks.tsx` (spring snap-in at frame 1, 5 px inward kick on each beat, `mixBlendMode: difference`), `letterbox.tsx` (60 px bars; close to black over frames 435–446, then a Signal CRT line shrinks to nothing), `hud.tsx` (type-on at boot, fades out 438–446)
 - `remotion/transitions/*.tsx` and `remotion/scenes/*.tsx`: one file each (see storyboard)
+- `scenes/kinetic-type.tsx`: a `WORDS` array; each word has `pose(t, fps)` → `{ x, y, skew, scale, wdth, tracking }`, an optional per-letter `letterY`, and a `Detail` widget in the bottom row (frame ruler / tracking blocks / easing curve with a moving dot / 16-bar meter). Ghosts = the same pose sampled 0.9 frames earlier ×6, drawn in the accent color. Background per beat: Bone, Signal, Ink, Cobalt. A giant outline copy of the word scrolls behind.
+- `scenes/shape.tsx`: all four shapes are sampled at the same 120 angles (ray–polygon hit), so the morph is a per-point radius lerp driven by `pop()` on each beat (no `interpolatePath`, no point-matching artifacts). Echo outlines = the same path 4 and 8 frames earlier. Satellites on 3 tilted ellipses are drawn behind or in front of the shape depending on `sin(theta)`.
 - `components/showreel-player.tsx` ("use client"): `<Player component={Showreel} durationInFrames={450} fps={30} compositionWidth={1920} compositionHeight={1080} controls loop autoPlay style={{ width: "100%" }} />`
 - `app/page.tsx`: dark showcase page with the player, a Download MP4 link (`/showreel/showreel.mp4`) and a short list of techniques. Update metadata and viewport `themeColor` in `app/layout.tsx`.
 

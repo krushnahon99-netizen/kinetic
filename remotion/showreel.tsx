@@ -7,6 +7,8 @@ import { Grain } from "./overlays/grain";
 import { Hud } from "./overlays/hud";
 import { Letterbox } from "./overlays/letterbox";
 import { Boot } from "./scenes/boot";
+import { KineticType } from "./scenes/kinetic-type";
+import { Shape } from "./scenes/shape";
 import { Title } from "./scenes/title";
 import { FlashFrame } from "./transitions/flash";
 import { Iris } from "./transitions/iris";
@@ -18,6 +20,8 @@ ensureFonts();
 const SCENE_COMPONENTS: { id: SceneId; Component: ComponentType }[] = [
   { id: "boot", Component: Boot },
   { id: "title", Component: Title },
+  { id: "kinetic", Component: KineticType },
+  { id: "shape", Component: Shape },
 ];
 
 export const Showreel = () => (
