@@ -6,7 +6,7 @@ Live status of this project. Any AI assistant: read this first, continue from **
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
 ## Status
-**About 55% done.** Shared lib, overlays, all four transitions and the Boot, Title, Kinetic Type and Shape scenes are written and reviewed. Four scenes left (generative, depth, montage, finale), then the page and the MP4.
+**About 70% done.** Shared lib, overlays, all four transitions and the Boot, Title, Kinetic Type, Shape, Generative and Depth scenes are written and reviewed. Two scenes left (montage, finale), then the page and the MP4.
 Last updated: 2026-10-27 by v0 (second account).
 
 ## Done
@@ -23,13 +23,15 @@ Last updated: 2026-10-27 by v0 (second account).
 - [x] `remotion/scenes/boot.tsx` and `remotion/scenes/title.tsx`, reviewed on a contact sheet (frames 6–105 look right; slat wipe fully covers at 105)
 - [x] `remotion/contact-sheet.tsx`: `ContactSheet` composition that renders up to 9 frozen frames in one still (see **Verify**)
 - [x] `remotion/scenes/kinetic-type.tsx` (`KineticType`) and `remotion/scenes/shape.tsx` (`Shape`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 106–215); `pnpm exec tsc --noEmit` passes
+- [x] `remotion/lib/caption.tsx` (`FigCaption`, `StateList`), now used by Shape, Generative and Depth
+- [x] `remotion/scenes/generative.tsx` (`Generative`) and `remotion/scenes/depth.tsx` (`Depth`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 226–344, including the iris close/open and the cobalt flash cut); `tsc` passes
 
 ## Next step
 1. New sandbox? Do **Sandbox setup** below first.
-2. Write `remotion/scenes/generative.tsx` (export `Generative`) and `remotion/scenes/depth.tsx` (export `Depth`), add both to `SCENE_COMPONENTS` in `remotion/showreel.tsx`, review with the contact sheet (frames 226, 236, 248, 258, 270, 290, 305, 320, 338), fix, update this file, then commit and push.
+2. Write `remotion/scenes/montage.tsx` (export `Montage`) and `remotion/scenes/finale.tsx` (export `Finale`) per the storyboard, add both to `SCENE_COMPONENTS` in `remotion/showreel.tsx`, review with the contact sheet (frames 347, 352, 358, 364, 370, 380, 395, 420, 444), fix, update this file, then commit and push.
 
 ## Remaining
-- [ ] Scenes in `remotion/scenes/`: generative, depth, montage, finale
+- [ ] Scenes in `remotion/scenes/`: montage, finale
 - [ ] `components/showreel-player.tsx`, `app/page.tsx`, metadata in `app/layout.tsx`
 - [ ] Review stills and fix problems
 - [ ] Render `public/showreel/showreel.mp4`
@@ -85,6 +87,9 @@ pnpm exec remotion browser ensure
 - `remotion/transitions/*.tsx` and `remotion/scenes/*.tsx`: one file each (see storyboard)
 - `scenes/kinetic-type.tsx`: a `WORDS` array; each word has `pose(t, fps)` → `{ x, y, skew, scale, wdth, tracking }`, an optional per-letter `letterY`, and a `Detail` widget in the bottom row (frame ruler / tracking blocks / easing curve with a moving dot / 16-bar meter). Ghosts = the same pose sampled 0.9 frames earlier ×6, drawn in the accent color. Background per beat: Bone, Signal, Ink, Cobalt. A giant outline copy of the word scrolls behind.
 - `scenes/shape.tsx`: all four shapes are sampled at the same 120 angles (ray–polygon hit), so the morph is a per-point radius lerp driven by `pop()` on each beat (no `interpolatePath`, no point-matching artifacts). Echo outlines = the same path 4 and 8 frames earlier. Satellites on 3 tilted ellipses are drawn behind or in front of the shape depending on `sin(theta)`.
+- `lib/caption.tsx`: every scene from Shape on has the same left caption (`FigCaption`: Signal square + typed mono lines at `left: 120, top: cy − 30`, optional live readout as children) and right state list (`StateList` at `right: 120, top: cy − 78`, active row = `floor(frame / BEAT)`). Figure numbers so far: FIG. 01–02 (title), 03 (shape), 04 (generative), 05 (depth).
+- `scenes/generative.tsx`: 300 particles. A module-level cache integrates the flow field (swirl around the center + `noise3D` bend) once for 12 pre-roll frames + up to the lock; frames render out of order, so nothing accumulates between renders. Ring slots are assigned by each particle's angle at the lock (no criss-crossing). States per beat: flow → lock into a 3-band ring at local 15 (Signal shockwave) → 5-petal rose `r·(1 + 0.28·sin 5θ)` with a spin kick at 30 → inhale at 45, then a spiral collapse to a Signal core that the iris closes on. Trails = the same particle sampled 8× at 0.75-frame steps; one tail + one head `<path>` per color.
+- `scenes/depth.tsx`: tunnel frame `id` has scale `1.32^(id + phase)` (self-similar, so the infinite zoom wraps seamlessly), twists 6° per step, and 4 corner rails join the frames into a spiral wireframe; phase = drift + a `pop()` lurch per beat + a rush into the cut. The cube is CSS 3D (`perspective: 1400`, `preserve-3d`, faces `rotateY(yaw) translateZ(200px)`): it slams in on local 15 (expoIn approach, spin, recoil), turns −90° per beat (MAKE → IT → MOVE), then flies at the lens. Face shading = Ink overlay `0.55·(1 − cos(yaw + rotY))`.
 - `components/showreel-player.tsx` ("use client"): `<Player component={Showreel} durationInFrames={450} fps={30} compositionWidth={1920} compositionHeight={1080} controls loop autoPlay style={{ width: "100%" }} />`
 - `app/page.tsx`: dark showcase page with the player, a Download MP4 link (`/showreel/showreel.mp4`) and a short list of techniques. Update metadata and viewport `themeColor` in `app/layout.tsx`.
 
@@ -116,6 +121,8 @@ A Node script synthesizes a 15 s, 120 BPM WAV (kick on every beat, off-beat hats
 - Load fonts with `loadFont({ family, url: staticFile("showreel/fonts/…") })` from `@remotion/fonts` (done in `lib/fonts.ts`).
 - Keep every `remotion` / `@remotion/*` package on the exact same version.
 - Render fails with "Failed to launch the browser process … libnspr4.so" → run the `dnf install` line from **Sandbox setup**.
+- CSS 3D: a face's content turns with the cube, so after `rotateY(-180deg)` the lid's text reads upside down (fixed in depth.tsx by rotating the lid label 180°).
+- Montage: freeze individual scene components (`<Freeze frame={n}><Shape /></Freeze>` inside a 1920×1080 box scaled down), never `<Showreel>` itself, because Showreel contains the montage, so that would recurse forever.
 
 ## Verify
 - Fastest review: one contact sheet of up to 9 frames, then open the PNG and look at it: `pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195,255,315,360,400,430]}' --log=error`. Fix clipping, overflow and empty frames.

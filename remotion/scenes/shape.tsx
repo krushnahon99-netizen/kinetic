@@ -1,7 +1,7 @@
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
+import { FigCaption, StateList } from "../lib/caption";
 import { beatPulse, lerp, pop, progress } from "../lib/easing";
 import { BEAT, COLORS } from "../lib/theme";
-import { Typed, mono } from "../lib/type";
 
 type Pt = readonly [number, number];
 
@@ -176,54 +176,13 @@ export const Shape = () => {
         <Satellites frame={frame} cx={cx} cy={cy} front />
       </svg>
 
-      <div
-        style={{
-          position: "absolute",
-          left: 120,
-          top: cy - 30,
-          display: "flex",
-          gap: 14,
-          opacity: progress(frame, 6, 6),
-        }}
-      >
-        <span style={{ width: 9, height: 9, marginTop: 3, backgroundColor: COLORS.signal }} />
-        <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-          <Typed text="FIG. 03 — PATH MORPH" frame={frame} start={6} perFrame={3} style={mono(15, { opacity: 0.9 })} />
-          <Typed text="120 PTS · POLAR LERP" frame={frame} start={10} perFrame={3} style={mono(15, { opacity: 0.5 })} />
-        </div>
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          right: 120,
-          top: cy - 78,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "flex-end",
-          gap: 14,
-          opacity: progress(frame, 8, 6),
-        }}
-      >
-        {NAMES.map((name, i) => {
-          const on = i === active;
-          return (
-            <div key={name} style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <span style={mono(16, { color: on ? COLORS.signal : COLORS.bone, opacity: on ? 1 : 0.35 })}>
-                {`0${i + 1}  ${name}`}
-              </span>
-              <span
-                style={{
-                  width: 10,
-                  height: 10,
-                  backgroundColor: on ? COLORS.signal : "transparent",
-                  border: `1.5px solid ${on ? COLORS.signal : `${COLORS.bone}59`}`,
-                }}
-              />
-            </div>
-          );
-        })}
-      </div>
+      <FigCaption
+        frame={frame}
+        start={6}
+        lines={["FIG. 03 — PATH MORPH", "120 PTS · POLAR LERP"]}
+        style={{ left: 120, top: cy - 30 }}
+      />
+      <StateList frame={frame} start={8} items={NAMES} active={active} style={{ right: 120, top: cy - 78 }} />
     </AbsoluteFill>
   );
 };

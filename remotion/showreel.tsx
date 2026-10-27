@@ -7,6 +7,8 @@ import { Grain } from "./overlays/grain";
 import { Hud } from "./overlays/hud";
 import { Letterbox } from "./overlays/letterbox";
 import { Boot } from "./scenes/boot";
+import { Depth } from "./scenes/depth";
+import { Generative } from "./scenes/generative";
 import { KineticType } from "./scenes/kinetic-type";
 import { Shape } from "./scenes/shape";
 import { Title } from "./scenes/title";
@@ -22,6 +24,8 @@ const SCENE_COMPONENTS: { id: SceneId; Component: ComponentType }[] = [
   { id: "title", Component: Title },
   { id: "kinetic", Component: KineticType },
   { id: "shape", Component: Shape },
+  { id: "generative", Component: Generative },
+  { id: "depth", Component: Depth },
 ];
 
 export const Showreel = () => (
