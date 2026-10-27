@@ -8,8 +8,10 @@ import { Hud } from "./overlays/hud";
 import { Letterbox } from "./overlays/letterbox";
 import { Boot } from "./scenes/boot";
 import { Depth } from "./scenes/depth";
+import { Finale } from "./scenes/finale";
 import { Generative } from "./scenes/generative";
 import { KineticType } from "./scenes/kinetic-type";
+import { Montage } from "./scenes/montage";
 import { Shape } from "./scenes/shape";
 import { Title } from "./scenes/title";
 import { FlashFrame } from "./transitions/flash";
@@ -26,6 +28,8 @@ const SCENE_COMPONENTS: { id: SceneId; Component: ComponentType }[] = [
   { id: "shape", Component: Shape },
   { id: "generative", Component: Generative },
   { id: "depth", Component: Depth },
+  { id: "montage", Component: Montage },
+  { id: "finale", Component: Finale },
 ];
 
 export const Showreel = () => (

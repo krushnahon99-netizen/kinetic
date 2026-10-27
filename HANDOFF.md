@@ -6,8 +6,8 @@ Live status of this project. Any AI assistant: read this first, continue from **
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
 ## Status
-**About 70% done.** Shared lib, overlays, all four transitions and the Boot, Title, Kinetic Type, Shape, Generative and Depth scenes are written and reviewed. Two scenes left (montage, finale), then the page and the MP4.
-Last updated: 2026-10-27 by v0 (second account).
+**About 85% done.** The whole 450-frame video is built: all eight scenes (boot → finale), four transitions and the overlays are written and reviewed on contact sheets. Left: the web page with the player, the MP4 render, optional sound, a browser screenshot.
+Last updated: 2026-10-27 by v0 (third account).
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -25,15 +25,14 @@ Last updated: 2026-10-27 by v0 (second account).
 - [x] `remotion/scenes/kinetic-type.tsx` (`KineticType`) and `remotion/scenes/shape.tsx` (`Shape`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 106–215); `pnpm exec tsc --noEmit` passes
 - [x] `remotion/lib/caption.tsx` (`FigCaption`, `StateList`), now used by Shape, Generative and Depth
 - [x] `remotion/scenes/generative.tsx` (`Generative`) and `remotion/scenes/depth.tsx` (`Depth`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 226–344, including the iris close/open and the cobalt flash cut); `tsc` passes
+- [x] `remotion/scenes/montage.tsx` (`Montage`) and `remotion/scenes/finale.tsx` (`Finale`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 346–437) and fixed (varied tile clips, softer whip strobe, captions aligned to the seal); `tsc` passes. Every scene has now been reviewed.
 
 ## Next step
 1. New sandbox? Do **Sandbox setup** below first.
-2. Write `remotion/scenes/montage.tsx` (export `Montage`) and `remotion/scenes/finale.tsx` (export `Finale`) per the storyboard, add both to `SCENE_COMPONENTS` in `remotion/showreel.tsx`, review with the contact sheet (frames 347, 352, 358, 364, 370, 380, 395, 420, 444), fix, update this file, then commit and push.
+2. Write `components/showreel-player.tsx`, `app/page.tsx` and the metadata/viewport in `app/layout.tsx` (see **Files**), check the page in a browser, update this file, commit and push.
 
 ## Remaining
-- [ ] Scenes in `remotion/scenes/`: montage, finale
 - [ ] `components/showreel-player.tsx`, `app/page.tsx`, metadata in `app/layout.tsx`
-- [ ] Review stills and fix problems
 - [ ] Render `public/showreel/showreel.mp4`
 - [ ] Optional: synthesized soundtrack
 - [ ] Screenshot the page in a browser
@@ -90,6 +89,8 @@ pnpm exec remotion browser ensure
 - `lib/caption.tsx`: every scene from Shape on has the same left caption (`FigCaption`: Signal square + typed mono lines at `left: 120, top: cy − 30`, optional live readout as children) and right state list (`StateList` at `right: 120, top: cy − 78`, active row = `floor(frame / BEAT)`). Figure numbers so far: FIG. 01–02 (title), 03 (shape), 04 (generative), 05 (depth).
 - `scenes/generative.tsx`: 300 particles. A module-level cache integrates the flow field (swirl around the center + `noise3D` bend) once for 12 pre-roll frames + up to the lock; frames render out of order, so nothing accumulates between renders. Ring slots are assigned by each particle's angle at the lock (no criss-crossing). States per beat: flow → lock into a 3-band ring at local 15 (Signal shockwave) → 5-petal rose `r·(1 + 0.28·sin 5θ)` with a spin kick at 30 → inhale at 45, then a spiral collapse to a Signal core that the iris closes on. Trails = the same particle sampled 8× at 0.75-frame steps; one tail + one head `<path>` per color.
 - `scenes/depth.tsx`: tunnel frame `id` has scale `1.32^(id + phase)` (self-similar, so the infinite zoom wraps seamlessly), twists 6° per step, and 4 corner rails join the frames into a spiral wireframe; phase = drift + a `pop()` lurch per beat + a rush into the cut. The cube is CSS 3D (`perspective: 1400`, `preserve-3d`, faces `rotateY(yaw) translateZ(200px)`): it slams in on local 15 (expoIn approach, spin, recoil), turns −90° per beat (MAKE → IT → MOVE), then flies at the lens. Face shading = Ink overlay `0.55·(1 − cos(yaw + rotY))`.
+- `scenes/montage.tsx`: 3×3 full-bleed wall (10 px gutters) of real clips. Each tile renders a scene component inside `<Freeze frame={n}>` in a 1920×1080 box scaled to cover the tile (`INNER`). `CLIPS` (15) repeats boot/title → kinetic → shape → generative → depth, so neighbors differ; tile (row, col) at step k shows `CLIPS[(row·3 + col + 7k) mod 15]`. Local timeline: 0–12 pull-back from `ZOOM_IN` (center tile = full frame, continuing the Depth shot) with −6° → 0°; before 15 the tiles cut to the next clip every 4 frames in a ripple from the center (rotateY flip-in + Bone flash); at 15 (global 360, downbeat) every tile flips (rotateX) to a Kinetic Type word in diagonal color stripes with a Signal flash while rows slide ±1 tile; from 22 clips strobe every 2 frames while each row accelerates left (staggered) under an SVG `feGaussianBlur stdDeviation="x 0"` horizontal smear into the whip-pan. Tile chips: scene label (from `SCENES[id].label`) and source frame `F###`.
+- `scenes/finale.tsx`: lockup center `LOCK_Y = 484`. 0–14 `Collapse`: the montage wall as flat Bone/Signal/Ink/Cobalt tiles shrinking and spinning, 48 inward speed lines and an imploding Signal ring all converge on a 12 px dot. 15 (global 390): the dot pops (`pop()`) into a 320 px Signal seal, Ink "v0" rises inside and stretches wdth 62→125, Bone shockwave + Signal echo, decaying shake. `Rings`: 72-tick dial with a Signal sweep hand, ring type on a `textPath` (letter-spacing computed to fill the circumference, revealed by a dash-offset mask), dashed orbit rings, +14° kicks on local beats 30/45/60. 30 (405): `FigCaption` "FIG. 07 — END CARD" left, credits list right (DIRECTION/DESIGN/MOTION v0, CODE REMOTION 4.0). 45 (420, last downbeat): `HirePill` pops (Signal fill decays to outline, dot blinks each beat) + typed "→ v0.app". From 52: 6% push-in while the letterbox closes (435–446). FIG. 06 is unused (the montage tiles carry chips instead).
 - `components/showreel-player.tsx` ("use client"): `<Player component={Showreel} durationInFrames={450} fps={30} compositionWidth={1920} compositionHeight={1080} controls loop autoPlay style={{ width: "100%" }} />`
 - `app/page.tsx`: dark showcase page with the player, a Download MP4 link (`/showreel/showreel.mp4`) and a short list of techniques. Update metadata and viewport `themeColor` in `app/layout.tsx`.
 
@@ -123,6 +124,8 @@ A Node script synthesizes a 15 s, 120 BPM WAV (kick on every beat, off-beat hats
 - Render fails with "Failed to launch the browser process … libnspr4.so" → run the `dnf install` line from **Sandbox setup**.
 - CSS 3D: a face's content turns with the cube, so after `rotateY(-180deg)` the lid's text reads upside down (fixed in depth.tsx by rotating the lid label 180°).
 - Montage: freeze individual scene components (`<Freeze frame={n}><Shape /></Freeze>` inside a 1920×1080 box scaled down), never `<Showreel>` itself, because Showreel contains the montage, so that would recurse forever.
+- `<Freeze frame={n}>` inside a `<Sequence>` gives its children `useCurrentFrame() === n` (4.0.539 resets `cumulatedFrom`), so a scene can be frozen at its own local frames from anywhere.
+- SVG `id`s (filters, masks, textPaths) must be unique per instance, because the contact sheet renders up to 9 Showreels in one document. Build them from `useId()` with non-alphanumerics stripped (see montage.tsx / finale.tsx).
 
 ## Verify
 - Fastest review: one contact sheet of up to 9 frames, then open the PNG and look at it: `pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195,255,315,360,400,430]}' --log=error`. Fix clipping, overflow and empty frames.
