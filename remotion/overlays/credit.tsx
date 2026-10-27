@@ -7,7 +7,8 @@ import { INSET, cropOffset } from "./crop-marks";
 
 const NAME = Array.from("KRUSHNA HON");
 const PRE = "CREATED BY";
-const SIZE = 184;
+/** At wdth 125 the name spans 120 → 1800 px, the same 120 px margins as the boot's log lines and % counter. */
+const SIZE = 170;
 const BUG_SCALE = 24 / SIZE;
 /** Distance from the corner of the top-right crop mark to the bug's top-right corner. */
 const GAP = 18;
@@ -40,7 +41,7 @@ const pathAt = (f: number, { width, height, fps }: Video) => {
   const crouch = progress(f, LAUNCH - 5, 5, expoIn) * (1 - fly);
   const offset = cropOffset(f, fps);
   const fromX = width / 2;
-  const fromY = height / 2 - 96 + crouch * 14;
+  const fromY = height / 2 - SIZE / 2 - 4 + crouch * 14;
   const dx = width - INSET - GAP + offset - fromX;
   const dy = LETTERBOX + INSET + GAP - offset - fromY;
   const bulge = (Math.sin(Math.PI * fly) * ARC) / Math.hypot(dx, dy);
@@ -170,7 +171,7 @@ export const Credit = () => {
   const split = 24 * (1 - progress(frame, 3, 14)) + 16 * charge + 10 * Math.sin(Math.PI * fly) + 5 * cutHit;
   const splitLocal = split / pose.scale;
 
-  const ghostFade = 1 - progress(frame, LAUNCH + 3, 9, linear);
+  const ghostFade = 1 - progress(frame, LAUNCH + 2, 6, linear);
   const ghosts =
     frame > LAUNCH && ghostFade > 0
       ? GHOSTS.map((k) => ({ k, f: frame - k * 0.8 })).filter((ghost) => ghost.f >= LAUNCH)

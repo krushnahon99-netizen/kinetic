@@ -10,8 +10,8 @@ Follow-ups from the owner (2026-10-27), in their words:
 2. "You have to add, at first the 'Created by Krushna Hon' and animate,design, etc. At first it'll in big and then by motion graphics and effects it goes to a corner, only as Krushna Hon and stays there through whole video"
 
 ## Status
-Original request: **100% done** (450-frame video, web page, soundtrack, final MP4). Follow-ups 1 and 2: **in progress, about 40%** (download fix built; credit code written, not reviewed).
-Last updated: 2026-10-27 by v0 (seventh account).
+Original request: **100% done** (450-frame video, web page, soundtrack, final MP4). Follow-ups 1 and 2: **in progress, about 75%** (download fix built; credit reviewed and polished; soundtrack regenerated). Left: re-render the MP4 + OG image, browser check, push to `main`.
+Last updated: 2026-10-27 by v0 (eighth account).
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -37,7 +37,11 @@ Last updated: 2026-10-27 by v0 (seventh account).
 - [x] Final browser check at 1440×900: the Player autoplays muted; after clicking "Unmute sound" it keeps playing in real time (HUD TC 00:00:08:10 → 00:00:10:25 in 2.6 s) and the scene index follows (GENERATIVE → DEPTH). Header, hero, player, spec sheet, scene index and footer all lay out correctly.
 
 ## Next step
-In-progress work is pushed to the branch `v0/krushna-credit-1027`, which can be ahead of `main`. Start with `git fetch origin && git checkout v0/krushna-credit-1027` (skip if it doesn't exist), read this file again there, then do the first unticked item in **Remaining**, following **Download fix** and **Creator credit** under **Decisions**.
+In-progress work is pushed to the branch `v0/krushna-credit-1027`, which can be ahead of `main`. A v0 import fetches only `main`, so a plain `git fetch origin` does not see that branch. Run:
+```bash
+git fetch origin +refs/heads/v0/krushna-credit-1027:refs/remotes/origin/v0/krushna-credit-1027 && git log --oneline main..origin/v0/krushna-credit-1027
+```
+If that lists commits, run `git checkout -b v0/krushna-credit-1027 origin/v0/krushna-credit-1027` and read this file again there; otherwise stay on `main`. Then do the first unticked item in **Remaining**.
 Change loop:
 1. New sandbox? Run `pnpm reel:setup` first (see **Sandbox setup**).
 2. Edit the scene in `remotion/scenes/` (or the page in `components/showreel/`), then review it with a contact sheet (see **Verify**) and `pnpm exec tsc --noEmit`.
@@ -49,8 +53,8 @@ Change loop:
 - [x] Render `public/showreel/showreel.mp4`
 - [x] Final screenshot of the page in a browser
 - [x] Follow-up 1: download fix (see **Download fix**): `components/showreel/download-link.tsx` used by both buttons, `Content-Disposition` header in `next.config.mjs` (checked with `curl -I`). The browser click check is in the last item.
-- [ ] Follow-up 2: `remotion/overlays/credit.tsx` + boot changes (see **Creator credit**), reviewed on contact sheets, `tsc` passes. Code written (credit overlay, `cropOffset`/`INSET` exported from `crop-marks.tsx`, boot label removed and % counter moved, Title FIG. 01 moved to `top: 190`, scene index copy in `components/showreel/chapters.ts`) but not reviewed yet.
-- [ ] Soundtrack for the credit in `scripts/make-soundtrack.mjs`, then `pnpm reel:sound`
+- [x] Follow-up 2: `remotion/overlays/credit.tsx` + boot changes (see **Creator credit**): credit overlay, `cropOffset`/`INSET` exported from `crop-marks.tsx`, boot label removed and % counter moved, Title FIG. 01 moved to `top: 190`, scene index copy in `components/showreel/chapters.ts`. Reviewed on 3 contact sheets (frames 4–46, 70, 106, 130, 360, 440) by the eighth account, which then set `SIZE` 184 → 170 (the name now sits on the 120 px margin grid) and shortened the ghost trail (fades 32–38) so it no longer smears over the "v0" slam. `tsc` passes.
+- [x] Soundtrack for the credit in `scripts/make-soundtrack.mjs` (10 type ticks from 4, 10 backspace ticks from 20, fling whoosh panned right at 32, lock ticks 38/39), then `pnpm reel:sound`: peak −1.0 dB, section RMS unchanged (title −11.6, finale −10.4 dB)
 - [ ] Re-render the MP4 and the OG image (frame 80) and check them; browser check of the page and the Download button
 - [ ] Update the storyboard in this file and push to `main`
 
@@ -142,11 +146,12 @@ pnpm exec remotion browser ensure
 - Finale: break 375–390 (no drums, rising tone + swell), big impact + G stab at 390, dial ticks 405/420/435, impact + Am stab at 420 (hire pill), then the whole mix tape-stops 435–446 with the letterbox, and a CRT blip at 443
 - Levels (pre-master RMS): drums −9.4, music −17.4, fx −16.9, reverb −27.8 dB; sections ≈ −12.5 dB RMS, break −21, finale −11. To rebalance, change `MUSIC_LEVEL` or the reverb `wet`, run `pnpm reel:sound`, then re-render.
 
-### Download fix (follow-up 1, planned)
+### Download fix (follow-up 1, built)
 - Cause (reproduced by the sixth account): the v0 preview shows the site in a sandboxed iframe without `allow-downloads`, so Chrome blocks the `<a download>` click ("download failed"). The same link on a normal top-level page downloads the identical 6,748,879-byte file, so the file and the server are fine.
 - Fix: in `next.config.mjs`, add a `headers()` entry for `source: '/showreel/showreel.mp4'` with `Content-Disposition: attachment; filename="krushna-hon-showreel-2026.mp4"`. New client component `components/showreel/download-link.tsx` renders `<a href="/showreel/showreel.mp4" download="krushna-hon-showreel-2026.mp4">`. Its `onClick` does nothing at top level, but inside an iframe (`window.self !== window.top`) it calls `event.preventDefault()` and `window.open(href, "_blank", "noopener")`, so the file downloads in a real tab. Use it for both buttons (`site-header.tsx`, `reel-spec.tsx`).
 
-### Creator credit (follow-up 2, planned)
+### Creator credit (follow-up 2, built)
+As built, where it differs from the plan below: `SIZE` = 170 (not 184), so at wdth 125 the name spans x 120 → 1800 like the boot's log lines and % counter; the name box is centered at y = 540 − SIZE/2 − 4 (451), so it sits on the boot line; the bug scale is 24/170; the lock frame runs 38–47 (`LOCK` = 38); ghosts fade over 32–38.
 Keep the video at 15 s / 450 frames, so every scene timing, the soundtrack grid and the page timecodes stay valid. The credit is one new overlay, `remotion/overlays/credit.tsx` (`Credit`), drawn above every scene and transition in this order: `CropMarks`, `Credit`, `Letterbox`, `Hud`, `Grain` (under the letterbox, so the closing bars cover it at the end). The same element starts big, flies and stays, so it reads as one continuous move.
 - 3–15: above the boot's Signal line (y 540), a big "KRUSHNA HON" (Archivo 184 px, wght 900) unfolds wdth 62→125. Its letters rise out of a baseline mask in a stagger that follows the line's head, with a Signal/Cobalt RGB split (screen) that decays. "CREATED BY" (mono 26, tracking 0.42em) types on above its left edge at 1.7 chars/frame from frame 4 (done at 10), with a Signal caret.
 - 20–24: "CREATED BY" backspaces at 2.5 chars/frame, leaving only the name. 25–30: anticipation (wdth squeezes to about 92, the split grows).
@@ -175,6 +180,7 @@ Keep the video at 15 s / 450 frames, so every scene timing, the soundtrack grid 
 - v0 sandbox Bash output sometimes drops lines (even a trailing `echo`). Redirect long output to a log file and Read that file. When re-running, use a new log file name: Read can return the earlier content of a file it already read.
 - Don't open earlier v0 chats with the default `v0_messages_list` (20 messages): the result is huge and stalled the fifth account's run. Everything needed is in this file. If the owner asks you to read a chat, pass `limit: 2` (newest first; the returned `cursor` pages to older messages).
 - The v0 preview iframe blocks downloads (no `allow-downloads`). Test downloads at top level (agent-browser on `http://localhost:3000`) and keep the iframe fallback in `download-link.tsx`.
+- A v0 import is a single-branch clone (`remote.origin.fetch` = `main` only), so `git fetch origin` and `git checkout <branch>` cannot see other branches. List them with `git ls-remote --heads origin` and fetch one with `git fetch origin +refs/heads/<branch>:refs/remotes/origin/<branch>`.
 - The remote has stale branches from earlier accounts (`v0/kinetic-showreel`, `v0/kinetic-showreel-7b86`, `v0/kinetic-showreel-858a`, `v0/kinetic-soundtrack`, …); `main` has everything. SyncGit reuses an existing branch with the same name, so give it a new one (e.g. `v0/<topic>-<date>`) to start from `main`'s HEAD.
 
 ## Verify
