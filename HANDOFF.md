@@ -5,9 +5,13 @@ Live status of this project. Any AI assistant: read this first, continue from **
 ## Goal
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
+Follow-ups from the owner (2026-10-27), in their words:
+1. "I was to download the video but it says download failed"
+2. "You have to add, at first the 'Created by Krushna Hon' and animate,design, etc. At first it'll in big and then by motion graphics and effects it goes to a corner, only as Krushna Hon and stays there through whole video"
+
 ## Status
-**100% done.** The 450-frame video, the web page (live player + scene index + spec sheet + download link), the synthesized soundtrack and the final MP4 with sound (`public/showreel/showreel.mp4`) are built and checked. Nothing from the original request is left.
-Last updated: 2026-10-27 by v0 (sixth account).
+Original request: **100% done** (450-frame video, web page, soundtrack, final MP4). Follow-ups 1 and 2: **in progress, about 10%** (planned under **Decisions**, nothing built yet).
+Last updated: 2026-10-27 by v0 (seventh account).
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -33,16 +37,22 @@ Last updated: 2026-10-27 by v0 (sixth account).
 - [x] Final browser check at 1440×900: the Player autoplays muted; after clicking "Unmute sound" it keeps playing in real time (HUD TC 00:00:08:10 → 00:00:10:25 in 2.6 s) and the scene index follows (GENERATIVE → DEPTH). Header, hero, player, spec sheet, scene index and footer all lay out correctly.
 
 ## Next step
-Nothing is required: the original request is complete. If the user asks for changes:
+In-progress work is pushed to the branch `v0/krushna-credit-1027`, which can be ahead of `main`. Start with `git fetch origin && git checkout v0/krushna-credit-1027` (skip if it doesn't exist), read this file again there, then do the first unticked item in **Remaining**, following **Download fix** and **Creator credit** under **Decisions**.
+Change loop:
 1. New sandbox? Run `pnpm reel:setup` first (see **Sandbox setup**).
 2. Edit the scene in `remotion/scenes/` (or the page in `components/showreel/`), then review it with a contact sheet (see **Verify**) and `pnpm exec tsc --noEmit`.
 3. If the video changed, re-render and check it (see **Verify**). If frame 80 changed, refresh the OG image: `pnpm exec remotion still remotion/index.ts Showreel app/opengraph-image.jpg --frame=80 --scale=0.625 --image-format=jpeg --log=error`.
-4. Update this file, commit and push to `main` (see **Working on this repo from v0**).
+4. Update this file, commit and push (see **Working on this repo from v0**).
 
 ## Remaining
 - [x] Synthesized soundtrack
 - [x] Render `public/showreel/showreel.mp4`
 - [x] Final screenshot of the page in a browser
+- [ ] Follow-up 1: download fix (see **Download fix**)
+- [ ] Follow-up 2: `remotion/overlays/credit.tsx` + boot changes (see **Creator credit**), reviewed on contact sheets, `tsc` passes
+- [ ] Soundtrack for the credit in `scripts/make-soundtrack.mjs`, then `pnpm reel:sound`
+- [ ] Re-render the MP4 and the OG image (frame 80) and check them; browser check of the page and the Download button
+- [ ] Update the storyboard in this file and push to `main`
 
 ## Sandbox setup (every new sandbox)
 `pnpm reel:setup` runs all of this (`scripts/setup-sandbox.sh`):
@@ -132,6 +142,21 @@ pnpm exec remotion browser ensure
 - Finale: break 375–390 (no drums, rising tone + swell), big impact + G stab at 390, dial ticks 405/420/435, impact + Am stab at 420 (hire pill), then the whole mix tape-stops 435–446 with the letterbox, and a CRT blip at 443
 - Levels (pre-master RMS): drums −9.4, music −17.4, fx −16.9, reverb −27.8 dB; sections ≈ −12.5 dB RMS, break −21, finale −11. To rebalance, change `MUSIC_LEVEL` or the reverb `wet`, run `pnpm reel:sound`, then re-render.
 
+### Download fix (follow-up 1, planned)
+- Cause (reproduced by the sixth account): the v0 preview shows the site in a sandboxed iframe without `allow-downloads`, so Chrome blocks the `<a download>` click ("download failed"). The same link on a normal top-level page downloads the identical 6,748,879-byte file, so the file and the server are fine.
+- Fix: in `next.config.mjs`, add a `headers()` entry for `source: '/showreel/showreel.mp4'` with `Content-Disposition: attachment; filename="krushna-hon-showreel-2026.mp4"`. New client component `components/showreel/download-link.tsx` renders `<a href="/showreel/showreel.mp4" download="krushna-hon-showreel-2026.mp4">`. Its `onClick` does nothing at top level, but inside an iframe (`window.self !== window.top`) it calls `event.preventDefault()` and `window.open(href, "_blank", "noopener")`, so the file downloads in a real tab. Use it for both buttons (`site-header.tsx`, `reel-spec.tsx`).
+
+### Creator credit (follow-up 2, planned)
+Keep the video at 15 s / 450 frames, so every scene timing, the soundtrack grid and the page timecodes stay valid. The credit is one new overlay, `remotion/overlays/credit.tsx` (`Credit`), drawn above every scene and transition in this order: `CropMarks`, `Credit`, `Letterbox`, `Hud`, `Grain` (under the letterbox, so the closing bars cover it at the end). The same element starts big, flies and stays, so it reads as one continuous move.
+- 3–15: above the boot's Signal line (y 540), a big "KRUSHNA HON" (Archivo 184 px, wght 900) unfolds wdth 62→125. Its letters rise out of a baseline mask in a stagger that follows the line's head, with a Signal/Cobalt RGB split (screen) that decays. "CREATED BY" (mono 26, tracking 0.42em) types on above its left edge at 1.7 chars/frame from frame 4 (done at 10), with a Signal caret.
+- 20–24: "CREATED BY" backspaces at 2.5 chars/frame, leaving only the name. 25–30: anticipation (wdth squeezes to about 92, the split grows).
+- 30 (the drop): the Title shockwave flings the name to the top-right corner. Position: expoOut over 13 frames along an arc. Scale: 1 → 0.13 (about 24 px) over 11 frames. Placement uses an anchor that moves from the text's center (0.5, 0.5) at (960, 444) to its top-right corner (1, 0) at (1862, 118), applied with `left/top` + `translate(-ax·100%, -ay·100%) scale(s)` and `transform-origin: ax·100% ay·100%`, so no text measuring is needed. 6 Signal ghost copies sampled 0.8 frames apart and a velocity skew sell the speed.
+- About 41–46: a Signal outline flashes around the name as it locks into the top-right crop-mark bracket.
+- 43–446: the bug "KRUSHNA HON" stays inside the top-right crop mark (right edge 1862, top 118), with `mixBlendMode: difference` like the crop marks so it reads on every background. A tiny RGB pulse on each cut (105, 165, 225, 285, 345, 375). It fades with the HUD (438–446).
+- Boot scene changes: remove the "LOADING REEL_2026.MOV" label (the credit's typed "CREATED BY" replaces it) and move the % counter below the line (`right: 120, top: cy + 40`). The line, cursor, log lines and the collapse to the dot stay.
+- Check the Title's "FIG. 01" callout (`right: 120, top: 150`) against the bug, and move it down if they crowd.
+- Sound: replace the 21 typing ticks with 10 (`tick(4 + k / 1.7)` for k 0–9), use backspace ticks at `20 + (k + 1) / 2.5` for k 0–9 instead of frames 20–26, and add a short riser 24–30, a whoosh panned right at 30 for the fling and a high lock tick around 41.
+
 ## Pitfalls
 - Inside `remotion/`: inline styles only (the CLI renderer doesn't run Tailwind) and relative imports only (no `@/` alias).
 - Drive all motion from `useCurrentFrame()`. No CSS transitions or keyframes, no `Math.random()` (use `random(seed)` from `remotion`).
@@ -148,7 +173,8 @@ pnpm exec remotion browser ensure
 - MP4 size: the per-frame grain barely compresses at low CRF (CRF 18 was estimated at ≈ 42 MB for 15 s), so the render uses `--crf=24 --x264-preset=slow`, which gives 6.7 MB. When rendering by hand, render to `/tmp/showreel.mp4` and copy it into `public/showreel/` afterwards, so a half-written file can't be committed.
 - `pnpm exec remotion ffmpeg` is a minimal build: filters such as `select` and `tile` fail with "No option name near …". To look at a frame of the MP4, seek instead: `pnpm exec remotion ffmpeg -v error -y -ss 10.5 -i public/showreel/showreel.mp4 -frames:v 1 -update 1 /tmp/stills/mp4-f315.png`.
 - v0 sandbox Bash output sometimes drops lines (even a trailing `echo`). Redirect long output to a log file and Read that file. When re-running, use a new log file name: Read can return the earlier content of a file it already read.
-- Don't open earlier v0 chats (`v0_messages_list`): the result is huge and stalled the fifth account's run. Everything needed is in this file.
+- Don't open earlier v0 chats with the default `v0_messages_list` (20 messages): the result is huge and stalled the fifth account's run. Everything needed is in this file. If the owner asks you to read a chat, pass `limit: 2` (newest first; the returned `cursor` pages to older messages).
+- The v0 preview iframe blocks downloads (no `allow-downloads`). Test downloads at top level (agent-browser on `http://localhost:3000`) and keep the iframe fallback in `download-link.tsx`.
 - The remote has stale branches from earlier accounts (`v0/kinetic-showreel`, `v0/kinetic-showreel-7b86`, `v0/kinetic-showreel-858a`, `v0/kinetic-soundtrack`, …); `main` has everything. SyncGit reuses an existing branch with the same name, so give it a new one (e.g. `v0/<topic>-<date>`) to start from `main`'s HEAD.
 
 ## Verify
