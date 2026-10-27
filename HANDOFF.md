@@ -6,7 +6,7 @@ Live status of this project. Any AI assistant: read this first, continue from **
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
 ## Status
-**About 15% done.** Setup is finished; no video code is written yet.
+**About 25% done.** Setup, shared lib, Remotion root and all persistent overlays are written, and a test still renders correctly. No scenes yet.
 Last updated: 2026-10-27 by v0.
 
 ## Done
@@ -14,22 +14,43 @@ Last updated: 2026-10-27 by v0.
 - [x] Installed at exactly 4.0.539: `remotion`, `@remotion/player`, `@remotion/media`, `@remotion/fonts`, `@remotion/noise`, `@remotion/paths`, and dev `@remotion/cli`
 - [x] `pnpm-workspace.yaml`: under `allowBuilds`, `esbuild: true`
 - [x] Fonts in `public/showreel/fonts/`: `Archivo-Variable.ttf` (axes wdth 62–125, wght 100–900) and `JetBrainsMono-Variable.ttf`
+- [x] `remotion/lib/theme.ts`, `remotion/lib/easing.ts`, `remotion/lib/fonts.ts`
+- [x] `remotion/index.ts` + `remotion/root.tsx`
+- [x] `remotion/showreel.tsx` with persistent overlays in `remotion/overlays/`: `grain.tsx`, `crop-marks.tsx`, `letterbox.tsx`, `hud.tsx`
+- [x] Test still of frame 70 renders: fonts load, HUD, crop marks, grain and letterbox look right
 
 ## Next step
-1. In every new sandbox, first run `pnpm install` and `pnpm exec remotion browser ensure`. The render browser lives in node_modules, so it never carries over.
-2. Write `remotion/lib/theme.ts`, `remotion/lib/easing.ts`, `remotion/lib/fonts.ts`, `remotion/root.tsx`, `remotion/index.ts` and `remotion/showreel.tsx` with the overlays.
-3. Render one still to prove the pipeline works before writing the scenes.
+1. New sandbox? Do **Sandbox setup** below first.
+2. Write `remotion/transitions/` (slat-wipe, iris, flash, whip-pan) and the first scenes `remotion/scenes/boot.tsx` + `remotion/scenes/title.tsx`, add them to `remotion/showreel.tsx` as `<Sequence>`s (use `SCENES` from `lib/theme.ts` for from/duration), render stills at frames 15, 45, 70 and 100, look at them, fix, then commit and push.
 
 ## Remaining
-- [ ] `remotion/lib/`: theme, easing, fonts
-- [ ] `remotion/index.ts` + `remotion/root.tsx`
-- [ ] `remotion/showreel.tsx`: scene sequences + persistent overlays
+- [ ] `remotion/transitions/`: slat-wipe, iris, flash, whip-pan (cover cuts)
 - [ ] Scenes in `remotion/scenes/`: boot, title, kinetic-type, shape, generative, depth, montage, finale
 - [ ] `components/showreel-player.tsx`, `app/page.tsx`, metadata in `app/layout.tsx`
 - [ ] Review stills and fix problems
 - [ ] Render `public/showreel/showreel.mp4`
 - [ ] Optional: synthesized soundtrack
 - [ ] Screenshot the page in a browser
+
+## Sandbox setup (every new sandbox)
+```bash
+pnpm install
+pnpm exec remotion browser ensure
+# Amazon Linux 2023 sandboxes (v0) lack Chrome's system libs ("libnspr4.so: cannot open shared object file"). Fix:
+sudo dnf install -y -q nss nspr atk at-spi2-atk cups-libs libdrm libxkbcommon libXcomposite libXdamage libXrandr libXfixes libXext libX11 libxcb mesa-libgbm pango cairo alsa-lib libxshmfence dbus-libs expat
+```
+
+### Working on this repo from v0
+v0's file tools can only write inside `/vercel/share/v0-project`, so put the kinetic repo there instead of cloning elsewhere:
+```bash
+cd /vercel/share/v0-project
+git remote add kinetic https://github.com/krushnahon99-netizen/kinetic.git
+git fetch kinetic
+git checkout -b v0/kinetic-showreel kinetic/main
+git branch --unset-upstream
+pnpm install
+```
+Save progress after every milestone: `git add -A && git commit -m "..." && git push kinetic HEAD:main`. The owner approved pushing straight to `main`. If the chat was imported from the kinetic repo directly, `origin` already is kinetic, so just push to it.
 
 ## Starting from an empty scaffold
 Skip this if `package.json` already lists `remotion` 4.0.539 (for example, when the repo was imported from GitHub).
@@ -49,18 +70,22 @@ pnpm exec remotion browser ensure
 
 ### Files
 - `remotion/index.ts`: `registerRoot(RemotionRoot)`. Never import this file from the Next app.
-- `remotion/root.tsx`: `<Composition id="Showreel" component={Showreel} durationInFrames={450} fps={30} width={1920} height={1080} />`
-- `remotion/showreel.tsx`: scenes as back-to-back `<Sequence>`s + persistent overlays (grain, HUD, crop marks, letterbox)
-- `remotion/scenes/*.tsx`: one file per scene. Shared code in `remotion/lib/theme.ts`, `easing.ts`, `fonts.ts`
+- `remotion/root.tsx`: `<Composition id="Showreel" component={Showreel} durationInFrames={450} fps={30} width={1920} height={1080} />` (values come from `VIDEO` in `lib/theme.ts`)
+- `remotion/showreel.tsx`: calls `ensureFonts()` at module level; scenes as back-to-back `<Sequence>`s, then transitions, then overlays in this order: `CropMarks`, `Letterbox`, `Hud`, `Grain` (grain always on top)
+- `remotion/lib/theme.ts`: `COLORS`, `VIDEO`, `BEAT` (15) / `BAR` (60), `LETTERBOX` (60 px), `DISPLAY_STACK` / `MONO_STACK`, `SCENES` (from, duration and HUD label per scene), `sceneAt(frame)`, `axes(wdth, wght)` → `fontVariationSettings` string
+- `remotion/lib/easing.ts`: `expoOut` / `expoIn` / `expoInOut`, `OVERSHOOT`, `CLAMP`, `tween(frame, [start, end], [from, to], easing)`, `progress(frame, start, duration, easing)`, `pop(frame, fps, delay)` (overshoot spring), `lerp`, `clamp01`, `beatPulse(frame)` (1 on each beat, decays)
+- `remotion/lib/fonts.ts`: `ensureFonts()` loads both fonts with `@remotion/fonts`; returns early when `typeof window === "undefined"` (Next SSR has no FontFace)
+- `remotion/overlays/`: `grain.tsx` (feTurbulence at half resolution, new seed per frame, 6.5% opacity), `crop-marks.tsx` (spring snap-in at frame 1, 5 px inward kick on each beat, `mixBlendMode: difference`), `letterbox.tsx` (60 px bars; close to black over frames 435–446, then a Signal CRT line shrinks to nothing), `hud.tsx` (type-on at boot, fades out 438–446)
+- `remotion/transitions/*.tsx` and `remotion/scenes/*.tsx`: one file each (see storyboard)
 - `components/showreel-player.tsx` ("use client"): `<Player component={Showreel} durationInFrames={450} fps={30} compositionWidth={1920} compositionHeight={1080} controls loop autoPlay style={{ width: "100%" }} />`
 - `app/page.tsx`: dark showcase page with the player, a Download MP4 link (`/showreel/showreel.mp4`) and a short list of techniques. Update metadata and viewport `themeColor` in `app/layout.tsx`.
 
 ### Look
 - Palette: Ink `#0B0B0C`, Bone `#F2EFE8`, Signal `#FF4D1F`, Cobalt `#2B4DFF` (sparingly).
-- Type: Archivo; animate `fontVariationSettings: "'wdth' X, 'wght' Y"` for kinetic stretch. JetBrains Mono for HUD and labels.
-- 120 BPM grid: 1 beat = 15 frames, 1 bar = 60 frames. Cuts and hits land on beats.
+- Type: Archivo; animate `fontVariationSettings` via `axes(wdth, wght)` for kinetic stretch. JetBrains Mono for HUD and labels.
+- 120 BPM grid: 1 beat = 15 frames, 1 bar = 60 frames. Cuts and hits land on beats. Note: scenes 105/165/225/285 start on the 4th beat of a bar, so each scene's first downbeat is at local frame 15.
 - Easing, no linear moves: expoOut `Easing.bezier(0.16, 1, 0.3, 1)`, expoIn `Easing.bezier(0.7, 0, 0.84, 0)`, expoInOut `Easing.bezier(0.87, 0, 0.13, 1)`. Overshoot: `spring({ frame, fps, config: { damping: 12, stiffness: 180, mass: 0.6 } })`.
-- Overlays the whole time: film grain (SVG feTurbulence, seed changes per frame, about 6% opacity), corner crop marks, HUD (top-left "v0 — MOTION REEL 2026", top-right SMPTE timecode, bottom-left current section such as "02/04 — SHAPE", bottom-right blinking REC dot).
+- Frame layout: 60 px Ink letterbox bars top and bottom → 1920×960 (2:1) picture area. The HUD lives inside the bars (always on Ink): top-left "v0 — MOTION REEL 2026", top-center dim "1920×1080 · 30 FPS · 120 BPM", top-right "TC" + SMPTE timecode, bottom-left section label (scrambles in from random glyphs on every scene change), bottom-center 360 px Signal progress bar, bottom-right 4-square beat ticker + blinking REC dot. Crop marks sit 40 px inside the picture corners.
 - Transitions are cover cuts: a slat wipe, iris, whip-pan smear or color flash frame covers the whole frame exactly at the cut.
 
 ### Storyboard (30 fps, 450 frames)
@@ -70,8 +95,8 @@ pnpm exec remotion browser ensure
 - **165–225 02 SHAPE**: circle → square → triangle → star morph (`interpolatePath`), orbiting satellites, a 16×9 dot grid rippling out from the center.
 - **225–285 03 GENERATIVE**: about 300 particles in a `noise3D` flow field (SVG) converge into a ring on the downbeat. Iris wipe out.
 - **285–345 04 DEPTH**: CSS 3D perspective, an infinite-zoom tunnel of nested frames plus a rotating type cube "MAKE / IT / MOVE".
-- **345–375 MONTAGE**: a 3×3 tile grid flips with rapid 4-frame flashes of earlier motifs, then a whip-pan into the finale.
-- **375–450 FINALE**: everything collapses to the center. Lockup "v0" + Signal circle, "MOTION DESIGN REEL 2026", a blinking "AVAILABLE FOR HIRE" pill, "v0.app". On the last beat the letterbox closes to black.
+- **345–375 MONTAGE**: a 3×3 tile grid flips with rapid 4-frame flashes of earlier motifs, then a whip-pan into the finale. Idea: `<Freeze frame={n}>` from `remotion` can show real frozen frames of earlier scenes inside the tiles.
+- **375–450 FINALE**: everything collapses to the center. Lockup "v0" + Signal circle, "MOTION DESIGN REEL 2026", a blinking "AVAILABLE FOR HIRE" pill, "v0.app". On the last beat the letterbox closes to black (already built in `overlays/letterbox.tsx`).
 
 ### Optional sound
 A Node script synthesizes a 15 s, 120 BPM WAV (kick on every beat, off-beat hats, noise whooshes at cuts, sub impact at frame 375) into `public/showreel/reel.wav`. Add it with `<Audio src={staticFile("showreel/reel.wav")} />` from `@remotion/media`.
@@ -79,11 +104,12 @@ A Node script synthesizes a 15 s, 120 BPM WAV (kick on every beat, off-beat hats
 ## Pitfalls
 - Inside `remotion/`: inline styles only (the CLI renderer doesn't run Tailwind) and relative imports only (no `@/` alias).
 - Drive all motion from `useCurrentFrame()`. No CSS transitions or keyframes, no `Math.random()` (use `random(seed)` from `remotion`).
-- Always clamp `interpolate` (`extrapolateLeft: "clamp"`, `extrapolateRight: "clamp"`).
-- Load fonts with `loadFont({ family, url: staticFile("showreel/fonts/…") })` from `@remotion/fonts`.
+- Always clamp `interpolate` (`extrapolateLeft: "clamp"`, `extrapolateRight: "clamp"`); `tween()` / `progress()` already do.
+- Load fonts with `loadFont({ family, url: staticFile("showreel/fonts/…") })` from `@remotion/fonts` (done in `lib/fonts.ts`).
 - Keep every `remotion` / `@remotion/*` package on the exact same version.
+- Render fails with "Failed to launch the browser process … libnspr4.so" → run the `dnf install` line from **Sandbox setup**.
 
 ## Verify
-- Render stills, then open the PNGs and look at them: `pnpm exec remotion still remotion/index.ts Showreel /tmp/f70.png --frame=70`, plus frames 15, 130, 195, 255, 315, 360 and 430. Fix clipping, overflow and empty frames.
+- Render stills, then open the PNGs and look at them: `pnpm exec remotion still remotion/index.ts Showreel /tmp/stills/f070.png --frame=70 --log=error`, plus frames 15, 130, 195, 255, 315, 360 and 430. Fix clipping, overflow and empty frames.
 - Final render (in the background, with a timeout): `pnpm exec remotion render remotion/index.ts Showreel public/showreel/showreel.mp4 --codec=h264 --crf=18`
 - Screenshot the page once in a browser.
