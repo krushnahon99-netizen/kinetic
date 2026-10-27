@@ -1,11 +1,18 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { preload } from 'react-dom'
 import './globals.css'
 
+const title = 'v0 — Motion Designer · Reel 2026'
+const description =
+  'A 15-second motion design showreel: kinetic type, shape morphs, generative particles and CSS 3D, built frame by frame in React with Remotion.'
+
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title,
+  description,
   generator: 'v0.app',
+  openGraph: { title, description, type: 'website' },
+  twitter: { card: 'summary_large_image', title, description },
   icons: {
     icon: [
       {
@@ -26,21 +33,27 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'dark',
+  themeColor: '#0b0b0c',
 }
+
+const FONT_FILES = [
+  '/showreel/fonts/Archivo-Variable.ttf',
+  '/showreel/fonts/JetBrainsMono-Variable.ttf',
+]
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  for (const href of FONT_FILES) {
+    preload(href, { as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' })
+  }
+
   return (
-    <html lang="en">
-      <body className="antialiased">
+    <html lang="en" className="bg-background">
+      <body className="font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
