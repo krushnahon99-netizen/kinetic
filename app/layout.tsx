@@ -1,11 +1,16 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
+import { preload } from 'react-dom'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'v0 — Motion Design Reel 2026',
+  description:
+    'A 15-second motion design showreel in eight scenes, cut to a 120 BPM grid. Every frame is a React component rendered with Remotion.',
   generator: 'v0.app',
+  twitter: {
+    card: 'summary_large_image',
+  },
   icons: {
     icon: [
       {
@@ -26,20 +31,26 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'dark',
+  themeColor: '#0b0b0c',
 }
+
+const FONT_FILES = [
+  '/showreel/fonts/Archivo-Variable.ttf',
+  '/showreel/fonts/JetBrainsMono-Variable.ttf',
+]
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  for (const href of FONT_FILES) {
+    preload(href, { as: 'font', type: 'font/ttf', crossOrigin: 'anonymous' })
+  }
+
   return (
-    <html lang="en">
+    <html lang="en" className="bg-background">
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

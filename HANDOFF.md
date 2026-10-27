@@ -6,8 +6,8 @@ Live status of this project. Any AI assistant: read this first, continue from **
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
 ## Status
-**About 85% done.** The whole 450-frame video is built: all eight scenes (boot → finale), four transitions and the overlays are written and reviewed on contact sheets. Left: the web page with the player, the MP4 render, optional sound, a browser screenshot.
-Last updated: 2026-10-27 by v0 (third account).
+**About 92% done.** The whole 450-frame video is built and reviewed, and the web page (live player + scene index + spec sheet + download link) is built and checked in a browser. Left: the soundtrack, the MP4 render, a final screenshot.
+Last updated: 2026-10-27 by v0 (fourth account).
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -26,16 +26,17 @@ Last updated: 2026-10-27 by v0 (third account).
 - [x] `remotion/lib/caption.tsx` (`FigCaption`, `StateList`), now used by Shape, Generative and Depth
 - [x] `remotion/scenes/generative.tsx` (`Generative`) and `remotion/scenes/depth.tsx` (`Depth`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 226–344, including the iris close/open and the cobalt flash cut); `tsc` passes
 - [x] `remotion/scenes/montage.tsx` (`Montage`) and `remotion/scenes/finale.tsx` (`Finale`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 346–437) and fixed (varied tile clips, softer whip strobe, captions aligned to the seal); `tsc` passes. Every scene has now been reviewed.
+- [x] Web page: `app/page.tsx`, `components/showreel-player.tsx`, `components/showreel/*` (header, hero, spec sheet, scene index, footer), palette + fonts in `app/globals.css`, metadata/viewport in `app/layout.tsx`, security headers in `next.config.mjs`, OG image `app/opengraph-image.jpg` (still of frame 80) + `.alt.txt`. Checked in a browser at 1440×900 and 390×844: autoplay, live scene tracking and click-to-seek work; `tsc` passes.
 
 ## Next step
 1. New sandbox? Do **Sandbox setup** below first.
-2. Write `components/showreel-player.tsx`, `app/page.tsx` and the metadata/viewport in `app/layout.tsx` (see **Files**), check the page in a browser, update this file, commit and push.
+2. Soundtrack (see **Optional sound**): write `scripts/make-soundtrack.mjs` (plain Node, no deps) → `public/showreel/reel.wav`, add `<Audio>` to `remotion/showreel.tsx`, check in the browser that unmuting the Player plays it, update this file, commit and push.
+3. Then render the MP4 (see **Verify**) so it includes the sound.
 
 ## Remaining
-- [ ] `components/showreel-player.tsx`, `app/page.tsx`, metadata in `app/layout.tsx`
-- [ ] Render `public/showreel/showreel.mp4`
 - [ ] Optional: synthesized soundtrack
-- [ ] Screenshot the page in a browser
+- [ ] Render `public/showreel/showreel.mp4`
+- [ ] Final screenshot of the page in a browser
 
 ## Sandbox setup (every new sandbox)
 ```bash
@@ -91,8 +92,10 @@ pnpm exec remotion browser ensure
 - `scenes/depth.tsx`: tunnel frame `id` has scale `1.32^(id + phase)` (self-similar, so the infinite zoom wraps seamlessly), twists 6° per step, and 4 corner rails join the frames into a spiral wireframe; phase = drift + a `pop()` lurch per beat + a rush into the cut. The cube is CSS 3D (`perspective: 1400`, `preserve-3d`, faces `rotateY(yaw) translateZ(200px)`): it slams in on local 15 (expoIn approach, spin, recoil), turns −90° per beat (MAKE → IT → MOVE), then flies at the lens. Face shading = Ink overlay `0.55·(1 − cos(yaw + rotY))`.
 - `scenes/montage.tsx`: 3×3 full-bleed wall (10 px gutters) of real clips. Each tile renders a scene component inside `<Freeze frame={n}>` in a 1920×1080 box scaled to cover the tile (`INNER`). `CLIPS` (15) repeats boot/title → kinetic → shape → generative → depth, so neighbors differ; tile (row, col) at step k shows `CLIPS[(row·3 + col + 7k) mod 15]`. Local timeline: 0–12 pull-back from `ZOOM_IN` (center tile = full frame, continuing the Depth shot) with −6° → 0°; before 15 the tiles cut to the next clip every 4 frames in a ripple from the center (rotateY flip-in + Bone flash); at 15 (global 360, downbeat) every tile flips (rotateX) to a Kinetic Type word in diagonal color stripes with a Signal flash while rows slide ±1 tile; from 22 clips strobe every 2 frames while each row accelerates left (staggered) under an SVG `feGaussianBlur stdDeviation="x 0"` horizontal smear into the whip-pan. Tile chips: scene label (from `SCENES[id].label`) and source frame `F###`.
 - `scenes/finale.tsx`: lockup center `LOCK_Y = 484`. 0–14 `Collapse`: the montage wall as flat Bone/Signal/Ink/Cobalt tiles shrinking and spinning, 48 inward speed lines and an imploding Signal ring all converge on a 12 px dot. 15 (global 390): the dot pops (`pop()`) into a 320 px Signal seal, Ink "v0" rises inside and stretches wdth 62→125, Bone shockwave + Signal echo, decaying shake. `Rings`: 72-tick dial with a Signal sweep hand, ring type on a `textPath` (letter-spacing computed to fill the circumference, revealed by a dash-offset mask), dashed orbit rings, +14° kicks on local beats 30/45/60. 30 (405): `FigCaption` "FIG. 07 — END CARD" left, credits list right (DIRECTION/DESIGN/MOTION v0, CODE REMOTION 4.0). 45 (420, last downbeat): `HirePill` pops (Signal fill decays to outline, dot blinks each beat) + typed "→ v0.app". From 52: 6% push-in while the letterbox closes (435–446). FIG. 06 is unused (the montage tiles carry chips instead).
-- `components/showreel-player.tsx` ("use client"): `<Player component={Showreel} durationInFrames={450} fps={30} compositionWidth={1920} compositionHeight={1080} controls loop autoPlay style={{ width: "100%" }} />`
-- `app/page.tsx`: dark showcase page with the player, a Download MP4 link (`/showreel/showreel.mp4`) and a short list of techniques. Update metadata and viewport `themeColor` in `app/layout.tsx`.
+- `components/showreel-player.tsx` ("use client"): `<Player component={Showreel} … autoPlay={!prefersReducedMotion} initiallyMuted controls loop clickToPlay doubleClickToFullscreen style={{ width: "100%" }} />` inside an `aspect-video` box with `CornerMarks`. The Player mounts only on the client (`useSyncExternalStore` on `prefers-reduced-motion`, server snapshot `null`). A `frameupdate` listener sets the active scene (`sceneAt`) and writes the active row's progress line straight to the DOM (no per-frame re-render). Clicking a scene row → `seekTo(SCENES[id].from)` + `play(event)`. Takes an `aside` slot (the server-rendered `ReelSpec`) so spec + scene index share one grid.
+- `components/showreel/`: `site-header.tsx`, `hero.tsx` ("MOTION, MADE OF CODE."), `reel-spec.tsx` (spec `dl` + Signal "Download MP4" → `/showreel/showreel.mp4`), `chapters.ts` (per-scene technique blurbs + SMPTE `timecode()`), `chapter-list.tsx` (scene index buttons, `aria-current` on the active one), `corner-marks.tsx`, `site-footer.tsx` ("Available for hire" pill, → v0.app).
+- `app/globals.css`: always dark; shadcn tokens mapped to the reel palette, plus `ink`/`bone`/`signal`/`cobalt` colors; `@font-face` for Archivo (`font-stretch: 62% 125%`) and JetBrains Mono from the same `/showreel/fonts/` files the Player loads (preloaded in `layout.tsx` with `preload()` from `react-dom`), so each font downloads once. `font-sans` = Archivo, `font-mono` = JetBrains Mono; width via `font-stretch-*` utilities.
+- `app/layout.tsx`: title "v0 — Motion Design Reel 2026", description, `twitter.card = summary_large_image`, viewport `colorScheme: dark`, `themeColor: #0b0b0c`. OG image is file-based: `app/opengraph-image.jpg` (Remotion still of frame 80 at `--scale=0.625`).
 
 ### Look
 - Palette: Ink `#0B0B0C`, Bone `#F2EFE8`, Signal `#FF4D1F`, Cobalt `#2B4DFF` (sparingly).
@@ -126,6 +129,8 @@ A Node script synthesizes a 15 s, 120 BPM WAV (kick on every beat, off-beat hats
 - Montage: freeze individual scene components (`<Freeze frame={n}><Shape /></Freeze>` inside a 1920×1080 box scaled down), never `<Showreel>` itself, because Showreel contains the montage, so that would recurse forever.
 - `<Freeze frame={n}>` inside a `<Sequence>` gives its children `useCurrentFrame() === n` (4.0.539 resets `cumulatedFrom`), so a scene can be frozen at its own local frames from anywhere.
 - SVG `id`s (filters, masks, textPaths) must be unique per instance, because the contact sheet renders up to 9 Showreels in one document. Build them from `useId()` with non-alphanumerics stripped (see montage.tsx / finale.tsx).
+- Player autoplay (4.0.539): an **unmuted** Player waits for its Web Audio `AudioContext` to resume before advancing, and browsers block that without a user gesture, so `autoPlay` (or `player.play()` from a mount effect) shows "Pause" but stays on frame 0. Always pair `autoPlay` with `initiallyMuted`; never call `play()` without a click event.
+- The background output of `remotion still` / `render` may stay empty until the process exits; check the output file (`ls`) instead of waiting on the task log.
 
 ## Verify
 - Fastest review: one contact sheet of up to 9 frames, then open the PNG and look at it: `pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195,255,315,360,400,430]}' --log=error`. Fix clipping, overflow and empty frames.
