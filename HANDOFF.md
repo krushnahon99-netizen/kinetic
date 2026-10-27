@@ -6,8 +6,8 @@ Live status of this project. Any AI assistant: read this first, continue from **
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
 ## Status
-**About 92% done.** The whole 450-frame video is built and reviewed, and the web page (live player + scene index + spec sheet + download link) is built and checked in a browser. Left: the soundtrack, the MP4 render, a final screenshot.
-Last updated: 2026-10-27 by v0 (fourth account).
+**About 96% done.** The 450-frame video, the web page (live player + scene index + spec sheet + download link) and the synthesized soundtrack are built and checked. Left: the MP4 render (with sound) and a final screenshot.
+Last updated: 2026-10-27 by v0 (fifth account).
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -27,18 +27,21 @@ Last updated: 2026-10-27 by v0 (fourth account).
 - [x] `remotion/scenes/generative.tsx` (`Generative`) and `remotion/scenes/depth.tsx` (`Depth`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 226–344, including the iris close/open and the cobalt flash cut); `tsc` passes
 - [x] `remotion/scenes/montage.tsx` (`Montage`) and `remotion/scenes/finale.tsx` (`Finale`), registered in `SCENE_COMPONENTS`, reviewed on contact sheets (frames 346–437) and fixed (varied tile clips, softer whip strobe, captions aligned to the seal); `tsc` passes. Every scene has now been reviewed.
 - [x] Web page: `app/page.tsx`, `components/showreel-player.tsx`, `components/showreel/*` (header, hero, spec sheet, scene index, footer), palette + fonts in `app/globals.css`, metadata/viewport in `app/layout.tsx`, security headers in `next.config.mjs`, OG image `app/opengraph-image.jpg` (still of frame 80) + `.alt.txt`. Checked in a browser at 1440×900 and 390×844: autoplay, live scene tracking and click-to-seek work; `tsc` passes.
+- [x] Soundtrack: `scripts/make-soundtrack.mjs` (plain Node, no deps, deterministic) → `public/showreel/reel.wav` (15 s, 48 kHz stereo 16-bit, 2.9 MB, peak −1 dBFS). `remotion/showreel.tsx` now exports `ShowreelPicture` (picture only; the contact sheet uses it) and `Showreel` (picture + `<Audio src={staticFile("showreel/reel.wav")} />` from `@remotion/media`; the composition and the Player use it). A 46-frame test render has an AAC 48 kHz stereo track; `tsc` passes.
+- [x] One-command helpers in `package.json`: `pnpm reel:setup` (runs `scripts/setup-sandbox.sh`), `pnpm reel:sound`, `pnpm reel:render`
 
 ## Next step
-1. New sandbox? Do **Sandbox setup** below first.
-2. Soundtrack (see **Optional sound**): write `scripts/make-soundtrack.mjs` (plain Node, no deps) → `public/showreel/reel.wav`, add `<Audio>` to `remotion/showreel.tsx`, check in the browser that unmuting the Player plays it, update this file, commit and push.
-3. Then render the MP4 (see **Verify**) so it includes the sound.
+1. New sandbox? Run `pnpm reel:setup` first (see **Sandbox setup**).
+2. If `public/showreel/showreel.mp4` is missing, render it: `pnpm reel:render` in the background with a 10 min timeout (check the file with `ls`, not the task log), then confirm it has an audio stream: `pnpm exec remotion ffprobe -v error -show_entries stream=codec_type,duration -of compact public/showreel/showreel.mp4`.
+3. Screenshot the page once in a browser (unmute the Player: the track should play and frames keep advancing), tick **Remaining**, commit and push to `main`.
 
 ## Remaining
-- [ ] Optional: synthesized soundtrack
-- [ ] Render `public/showreel/showreel.mp4`
+- [x] Synthesized soundtrack
+- [ ] Render `public/showreel/showreel.mp4` (the fifth account started it; if the file isn't in the repo, render again)
 - [ ] Final screenshot of the page in a browser
 
 ## Sandbox setup (every new sandbox)
+`pnpm reel:setup` runs all of this (`scripts/setup-sandbox.sh`):
 ```bash
 pnpm install
 pnpm exec remotion browser ensure
@@ -96,6 +99,7 @@ pnpm exec remotion browser ensure
 - `components/showreel/`: `site-header.tsx`, `hero.tsx` ("MOTION, MADE OF CODE."), `reel-spec.tsx` (spec `dl` + Signal "Download MP4" → `/showreel/showreel.mp4`), `chapters.ts` (per-scene technique blurbs + SMPTE `timecode()`), `chapter-list.tsx` (scene index buttons, `aria-current` on the active one), `corner-marks.tsx`, `site-footer.tsx` ("Available for hire" pill, → v0.app).
 - `app/globals.css`: always dark; shadcn tokens mapped to the reel palette, plus `ink`/`bone`/`signal`/`cobalt` colors; `@font-face` for Archivo (`font-stretch: 62% 125%`) and JetBrains Mono from the same `/showreel/fonts/` files the Player loads (preloaded in `layout.tsx` with `preload()` from `react-dom`), so each font downloads once. `font-sans` = Archivo, `font-mono` = JetBrains Mono; width via `font-stretch-*` utilities.
 - `app/layout.tsx`: title "v0 — Motion Design Reel 2026", description, `twitter.card = summary_large_image`, viewport `colorScheme: dark`, `themeColor: #0b0b0c`. OG image is file-based: `app/opengraph-image.jpg` (Remotion still of frame 80 at `--scale=0.625`).
+- `scripts/make-soundtrack.mjs`: the soundtrack synth (see **Sound**). `scripts/setup-sandbox.sh`: `pnpm install` + `remotion browser ensure` + the `dnf` libs.
 
 ### Look
 - Palette: Ink `#0B0B0C`, Bone `#F2EFE8`, Signal `#FF4D1F`, Cobalt `#2B4DFF` (sparingly).
@@ -115,8 +119,14 @@ pnpm exec remotion browser ensure
 - **345–375 MONTAGE**: a 3×3 tile grid flips with rapid 4-frame flashes of earlier motifs, then a whip-pan into the finale. Idea: `<Freeze frame={n}>` from `remotion` can show real frozen frames of earlier scenes inside the tiles.
 - **375–450 FINALE**: everything collapses to the center. Lockup "v0" + Signal circle, "MOTION DESIGN REEL 2026", a blinking "AVAILABLE FOR HIRE" pill, "v0.app". On the last beat the letterbox closes to black (already built in `overlays/letterbox.tsx`).
 
-### Optional sound
-A Node script synthesizes a 15 s, 120 BPM WAV (kick on every beat, off-beat hats, noise whooshes at cuts, sub impact at frame 375) into `public/showreel/reel.wav`. Add it with `<Audio src={staticFile("showreel/reel.wav")} />` from `@remotion/media`.
+### Sound (built)
+`scripts/make-soundtrack.mjs` synthesizes everything sample by sample (PolyBLEP saws, RBJ biquads, Freeverb-style reverb, seeded noise) and places every hit on a video frame. A minor, one chord per bar: Am F C G | Am F G | Am. Buses: drums, music (sidechain-pumped by the kick), fx, reverb send. Master: DC block → tanh saturation → normalize to −1 dBFS.
+- 0–30 boot: crop-mark ticks, a tone that pans left→right with the Signal line, one tick per typed letter (frame 4 + k/1.7), backspace ticks, a falling tone as the line collapses
+- 30: the drop (sub impact + crash). Then a kick on every beat, off-beat hats (open on the last off-beat of each bar), off-beat bass, pads that brighten bar by bar; clap on the backbeat from 105; 16th ghost hats and a 16th arpeggio from 165 to 345; one rising note per Kinetic Type word (105/120/135/150)
+- Cuts: slat wipe = whoosh + 8 panned slat ticks (99.75 + 0.75·i); flashes 165/225/345 = whoosh + falling zap; iris 285 = rising whoosh + sub. Generative ring lock 240, cube slam 300 and cube turns 315/330 have their own hits
+- Montage: ripple ticks 345–357, impact + zap at 360, strobe ticks 367–373, whip whoosh panned right→left into 375
+- Finale: break 375–390 (no drums, rising tone + swell), big impact + G stab at 390, dial ticks 405/420/435, impact + Am stab at 420 (hire pill), then the whole mix tape-stops 435–446 with the letterbox, and a CRT blip at 443
+- Levels (pre-master RMS): drums −9.4, music −17.4, fx −16.9, reverb −27.8 dB; sections ≈ −12.5 dB RMS, break −21, finale −11. To rebalance, change `MUSIC_LEVEL` or the reverb `wet`, run `pnpm reel:sound`, then re-render.
 
 ## Pitfalls
 - Inside `remotion/`: inline styles only (the CLI renderer doesn't run Tailwind) and relative imports only (no `@/` alias).
@@ -131,9 +141,13 @@ A Node script synthesizes a 15 s, 120 BPM WAV (kick on every beat, off-beat hats
 - SVG `id`s (filters, masks, textPaths) must be unique per instance, because the contact sheet renders up to 9 Showreels in one document. Build them from `useId()` with non-alphanumerics stripped (see montage.tsx / finale.tsx).
 - Player autoplay (4.0.539): an **unmuted** Player waits for its Web Audio `AudioContext` to resume before advancing, and browsers block that without a user gesture, so `autoPlay` (or `player.play()` from a mount effect) shows "Pause" but stays on frame 0. Always pair `autoPlay` with `initiallyMuted`; never call `play()` without a click event.
 - The background output of `remotion still` / `render` may stay empty until the process exits; check the output file (`ls`) instead of waiting on the task log.
+- MP4 size: the per-frame grain barely compresses. CRF 18 ≈ 42 MB for 15 s (a 46-frame test was 4.3 MB), so `reel:render` uses `--crf=24 --x264-preset=slow`. When rendering by hand, render to `/tmp/showreel.mp4` and copy it into `public/showreel/` afterwards, so a half-written file can't be committed.
+- v0 sandbox Bash output sometimes drops lines (even a trailing `echo`). Redirect long output to a log file and Read that file. When re-running, use a new log file name: Read can return the earlier content of a file it already read.
+- Don't open earlier v0 chats (`v0_messages_list`): the result is huge and stalled the fifth account's run. Everything needed is in this file.
 
 ## Verify
 - Fastest review: one contact sheet of up to 9 frames, then open the PNG and look at it: `pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195,255,315,360,400,430]}' --log=error`. Fix clipping, overflow and empty frames.
 - Single full-size frame: `pnpm exec remotion still remotion/index.ts Showreel /tmp/stills/f070.png --frame=70 --log=error`
-- Final render (in the background, with a timeout): `pnpm exec remotion render remotion/index.ts Showreel public/showreel/showreel.mp4 --codec=h264 --crf=18`
+- Final render (in the background, with a timeout): `pnpm reel:render` (= `remotion render remotion/index.ts Showreel public/showreel/showreel.mp4 --codec=h264 --crf=24 --x264-preset=slow`)
+- Audio track present: `pnpm exec remotion ffprobe -v error -show_entries stream=codec_type,codec_name,duration -of compact public/showreel/showreel.mp4` → one `video` (h264) and one `audio` (aac) stream, both ≈ 15 s
 - Screenshot the page once in a browser.

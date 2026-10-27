@@ -1,5 +1,6 @@
 import type { ComponentType } from "react";
-import { AbsoluteFill, Sequence } from "remotion";
+import { Audio } from "@remotion/media";
+import { AbsoluteFill, Sequence, staticFile } from "remotion";
 import { ensureFonts } from "./lib/fonts";
 import { COLORS, SCENES, type SceneId } from "./lib/theme";
 import { CropMarks } from "./overlays/crop-marks";
@@ -32,7 +33,8 @@ const SCENE_COMPONENTS: { id: SceneId; Component: ComponentType }[] = [
   { id: "finale", Component: Finale },
 ];
 
-export const Showreel = () => (
+/** The picture alone. The contact sheet renders up to 9 frozen copies of it, so it carries no audio. */
+export const ShowreelPicture = () => (
   <AbsoluteFill style={{ backgroundColor: COLORS.ink, overflow: "hidden" }}>
     {SCENE_COMPONENTS.map(({ id, Component }) => (
       <Sequence key={id} from={SCENES[id].from} durationInFrames={SCENES[id].duration} name={id}>
@@ -52,4 +54,11 @@ export const Showreel = () => (
     <Hud />
     <Grain />
   </AbsoluteFill>
+);
+
+export const Showreel = () => (
+  <>
+    <ShowreelPicture />
+    <Audio src={staticFile("showreel/reel.wav")} />
+  </>
 );

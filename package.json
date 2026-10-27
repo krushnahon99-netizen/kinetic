@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "reel:setup": "bash scripts/setup-sandbox.sh",
+    "reel:sound": "node scripts/make-soundtrack.mjs",
+    "reel:render": "remotion render remotion/index.ts Showreel public/showreel/showreel.mp4 --codec=h264 --crf=24 --x264-preset=slow"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

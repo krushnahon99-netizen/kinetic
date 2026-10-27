@@ -1,6 +1,6 @@
 import { AbsoluteFill, Freeze } from "remotion";
 import { COLORS, MONO_STACK, VIDEO } from "./lib/theme";
-import { Showreel } from "./showreel";
+import { ShowreelPicture } from "./showreel";
 
 export type ContactSheetProps = { frames: number[] };
 
@@ -29,7 +29,7 @@ export const ContactSheet = ({ frames }: ContactSheetProps) => {
           }}
         >
           <Freeze frame={frame}>
-            <Showreel />
+            <ShowreelPicture />
           </Freeze>
           <div
             style={{
