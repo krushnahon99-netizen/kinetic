@@ -6,8 +6,8 @@ Live status of this project. Any AI assistant: read this first, continue from **
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
 ## Status
-**About 96% done.** The 450-frame video, the web page (live player + scene index + spec sheet + download link) and the synthesized soundtrack are built and checked. Left: the MP4 render (with sound) and a final screenshot.
-Last updated: 2026-10-27 by v0 (fifth account).
+**100% done.** The 450-frame video, the web page (live player + scene index + spec sheet + download link), the synthesized soundtrack and the final MP4 with sound (`public/showreel/showreel.mp4`) are built and checked. Nothing from the original request is left.
+Last updated: 2026-10-27 by v0 (sixth account).
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -29,16 +29,20 @@ Last updated: 2026-10-27 by v0 (fifth account).
 - [x] Web page: `app/page.tsx`, `components/showreel-player.tsx`, `components/showreel/*` (header, hero, spec sheet, scene index, footer), palette + fonts in `app/globals.css`, metadata/viewport in `app/layout.tsx`, security headers in `next.config.mjs`, OG image `app/opengraph-image.jpg` (still of frame 80) + `.alt.txt`. Checked in a browser at 1440×900 and 390×844: autoplay, live scene tracking and click-to-seek work; `tsc` passes.
 - [x] Soundtrack: `scripts/make-soundtrack.mjs` (plain Node, no deps, deterministic) → `public/showreel/reel.wav` (15 s, 48 kHz stereo 16-bit, 2.9 MB, peak −1 dBFS). `remotion/showreel.tsx` now exports `ShowreelPicture` (picture only; the contact sheet uses it) and `Showreel` (picture + `<Audio src={staticFile("showreel/reel.wav")} />` from `@remotion/media`; the composition and the Player use it). A 46-frame test render has an AAC 48 kHz stereo track; `tsc` passes.
 - [x] One-command helpers in `package.json`: `pnpm reel:setup` (runs `scripts/setup-sandbox.sh`), `pnpm reel:sound`, `pnpm reel:render`
+- [x] Final render `public/showreel/showreel.mp4`: 6.7 MB, h264 1920×1080 15.000 s + AAC 48 kHz stereo 15.019 s (CRF 24, x264 `slow`). Rendered to `/tmp` with `--concurrency=3` in 93 s on a 4-CPU sandbox, then copied in. Frames 315 and 400 pulled from the MP4 look clean, and the dev server serves it (`200 video/mp4`), so both Download buttons work.
+- [x] Final browser check at 1440×900: the Player autoplays muted; after clicking "Unmute sound" it keeps playing in real time (HUD TC 00:00:08:10 → 00:00:10:25 in 2.6 s) and the scene index follows (GENERATIVE → DEPTH). Header, hero, player, spec sheet, scene index and footer all lay out correctly.
 
 ## Next step
+Nothing is required: the original request is complete. If the user asks for changes:
 1. New sandbox? Run `pnpm reel:setup` first (see **Sandbox setup**).
-2. If `public/showreel/showreel.mp4` is missing, render it: `pnpm reel:render` in the background with a 10 min timeout (check the file with `ls`, not the task log), then confirm it has an audio stream: `pnpm exec remotion ffprobe -v error -show_entries stream=codec_type,duration -of compact public/showreel/showreel.mp4`.
-3. Screenshot the page once in a browser (unmute the Player: the track should play and frames keep advancing), tick **Remaining**, commit and push to `main`.
+2. Edit the scene in `remotion/scenes/` (or the page in `components/showreel/`), then review it with a contact sheet (see **Verify**) and `pnpm exec tsc --noEmit`.
+3. If the video changed, re-render and check it (see **Verify**). If frame 80 changed, refresh the OG image: `pnpm exec remotion still remotion/index.ts Showreel app/opengraph-image.jpg --frame=80 --scale=0.625 --image-format=jpeg --log=error`.
+4. Update this file, commit and push to `main` (see **Working on this repo from v0**).
 
 ## Remaining
 - [x] Synthesized soundtrack
-- [ ] Render `public/showreel/showreel.mp4` (the fifth account started it; if the file isn't in the repo, render again)
-- [ ] Final screenshot of the page in a browser
+- [x] Render `public/showreel/showreel.mp4`
+- [x] Final screenshot of the page in a browser
 
 ## Sandbox setup (every new sandbox)
 `pnpm reel:setup` runs all of this (`scripts/setup-sandbox.sh`):
@@ -140,14 +144,18 @@ pnpm exec remotion browser ensure
 - `<Freeze frame={n}>` inside a `<Sequence>` gives its children `useCurrentFrame() === n` (4.0.539 resets `cumulatedFrom`), so a scene can be frozen at its own local frames from anywhere.
 - SVG `id`s (filters, masks, textPaths) must be unique per instance, because the contact sheet renders up to 9 Showreels in one document. Build them from `useId()` with non-alphanumerics stripped (see montage.tsx / finale.tsx).
 - Player autoplay (4.0.539): an **unmuted** Player waits for its Web Audio `AudioContext` to resume before advancing, and browsers block that without a user gesture, so `autoPlay` (or `player.play()` from a mount effect) shows "Pause" but stays on frame 0. Always pair `autoPlay` with `initiallyMuted`; never call `play()` without a click event.
-- The background output of `remotion still` / `render` may stay empty until the process exits; check the output file (`ls`) instead of waiting on the task log.
-- MP4 size: the per-frame grain barely compresses. CRF 18 ≈ 42 MB for 15 s (a 46-frame test was 4.3 MB), so `reel:render` uses `--crf=24 --x264-preset=slow`. When rendering by hand, render to `/tmp/showreel.mp4` and copy it into `public/showreel/` afterwards, so a half-written file can't be committed.
+- The background output of `remotion still` / `render` may stay empty until the process exits; check the output file (`ls`) instead of waiting on the task log. A full render takes about 1.5 min on a 4-CPU sandbox (93 s with `--concurrency=3`), so a 10 min timeout is plenty.
+- MP4 size: the per-frame grain barely compresses at low CRF (CRF 18 was estimated at ≈ 42 MB for 15 s), so the render uses `--crf=24 --x264-preset=slow`, which gives 6.7 MB. When rendering by hand, render to `/tmp/showreel.mp4` and copy it into `public/showreel/` afterwards, so a half-written file can't be committed.
+- `pnpm exec remotion ffmpeg` is a minimal build: filters such as `select` and `tile` fail with "No option name near …". To look at a frame of the MP4, seek instead: `pnpm exec remotion ffmpeg -v error -y -ss 10.5 -i public/showreel/showreel.mp4 -frames:v 1 -update 1 /tmp/stills/mp4-f315.png`.
 - v0 sandbox Bash output sometimes drops lines (even a trailing `echo`). Redirect long output to a log file and Read that file. When re-running, use a new log file name: Read can return the earlier content of a file it already read.
 - Don't open earlier v0 chats (`v0_messages_list`): the result is huge and stalled the fifth account's run. Everything needed is in this file.
+- The remote has stale branches from earlier accounts (`v0/kinetic-showreel`, `v0/kinetic-showreel-7b86`, `v0/kinetic-showreel-858a`, `v0/kinetic-soundtrack`, …); `main` has everything. SyncGit reuses an existing branch with the same name, so give it a new one (e.g. `v0/<topic>-<date>`) to start from `main`'s HEAD.
 
 ## Verify
 - Fastest review: one contact sheet of up to 9 frames, then open the PNG and look at it: `pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195,255,315,360,400,430]}' --log=error`. Fix clipping, overflow and empty frames.
 - Single full-size frame: `pnpm exec remotion still remotion/index.ts Showreel /tmp/stills/f070.png --frame=70 --log=error`
-- Final render (in the background, with a timeout): `pnpm reel:render` (= `remotion render remotion/index.ts Showreel public/showreel/showreel.mp4 --codec=h264 --crf=24 --x264-preset=slow`)
+- Final render (in the background, ≈ 1.5 min): `pnpm exec remotion render remotion/index.ts Showreel /tmp/showreel.mp4 --codec=h264 --crf=24 --x264-preset=slow --concurrency=3`, then `cp /tmp/showreel.mp4 public/showreel/showreel.mp4`. (`pnpm reel:render` uses the same codec settings at the default concurrency and writes straight into `public/showreel/`.)
 - Audio track present: `pnpm exec remotion ffprobe -v error -show_entries stream=codec_type,codec_name,duration -of compact public/showreel/showreel.mp4` → one `video` (h264) and one `audio` (aac) stream, both ≈ 15 s
-- Screenshot the page once in a browser.
+- Encoded frames look right: pull one or two frames from the MP4 by seeking (command in **Pitfalls**) and open the PNGs.
+- Download link: `curl -s -o /dev/null -w "%{http_code} %{content_type}\n" http://localhost:3000/showreel/showreel.mp4` → `200 video/mp4`
+- Screenshot the page once in a browser (unmute the Player: frames must keep advancing).
