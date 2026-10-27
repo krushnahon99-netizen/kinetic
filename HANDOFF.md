@@ -10,7 +10,7 @@ Follow-ups from the owner (2026-10-27), in their words:
 2. "You have to add, at first the 'Created by Krushna Hon' and animate,design, etc. At first it'll in big and then by motion graphics and effects it goes to a corner, only as Krushna Hon and stays there through whole video"
 
 ## Status
-Original request: **100% done** (450-frame video, web page, soundtrack, final MP4). Follow-ups 1 and 2: **in progress, about 75%** (download fix built; credit reviewed and polished; soundtrack regenerated). Left: re-render the MP4 + OG image, browser check, push to `main`.
+Original request and follow-ups 1 and 2: **100% done** (450-frame video with the "Created by Krushna Hon" credit, web page, soundtrack, final MP4, working Download buttons).
 Last updated: 2026-10-27 by v0 (eighth account).
 
 ## Done
@@ -37,11 +37,14 @@ Last updated: 2026-10-27 by v0 (eighth account).
 - [x] Final browser check at 1440×900: the Player autoplays muted; after clicking "Unmute sound" it keeps playing in real time (HUD TC 00:00:08:10 → 00:00:10:25 in 2.6 s) and the scene index follows (GENERATIVE → DEPTH). Header, hero, player, spec sheet, scene index and footer all lay out correctly.
 
 ## Next step
-In-progress work is pushed to the branch `v0/krushna-credit-1027`, which can be ahead of `main`. A v0 import fetches only `main`, so a plain `git fetch origin` does not see that branch. Run:
+Nothing is queued: every requested item is done and pushed to `main`. Wait for the owner's next request.
+Open question to raise with the owner (not requested, so not changed): the HUD ("v0 — MOTION REEL 2026"), the site header and page title ("v0 — Motion reel 2026"), and the finale (the "v0" seal, the credits DIRECTION / DESIGN / MOTION: v0, "→ v0.app") still credit v0. Ask whether they should say Krushna Hon.
+Before starting new work, confirm `main` is the newest state. A v0 import fetches only `main`, so a plain `git fetch origin` does not see other branches:
 ```bash
+git ls-remote --heads origin
 git fetch origin +refs/heads/v0/krushna-credit-1027:refs/remotes/origin/v0/krushna-credit-1027 && git log --oneline main..origin/v0/krushna-credit-1027
 ```
-If that lists commits, run `git checkout -b v0/krushna-credit-1027 origin/v0/krushna-credit-1027` and read this file again there; otherwise stay on `main`. Then do the first unticked item in **Remaining**.
+If the second command lists commits, run `git checkout -b v0/krushna-credit-1027 origin/v0/krushna-credit-1027` and read this file again there; otherwise stay on `main`. For new work: add the request under **Goal** and its steps under **Remaining**, start a fresh branch with SyncGit (`branchName: v0/<topic>-<date>`), and follow the change loop below.
 Change loop:
 1. New sandbox? Run `pnpm reel:setup` first (see **Sandbox setup**).
 2. Edit the scene in `remotion/scenes/` (or the page in `components/showreel/`), then review it with a contact sheet (see **Verify**) and `pnpm exec tsc --noEmit`.
@@ -55,8 +58,8 @@ Change loop:
 - [x] Follow-up 1: download fix (see **Download fix**): `components/showreel/download-link.tsx` used by both buttons, `Content-Disposition` header in `next.config.mjs` (checked with `curl -I`). The browser click check is in the last item.
 - [x] Follow-up 2: `remotion/overlays/credit.tsx` + boot changes (see **Creator credit**): credit overlay, `cropOffset`/`INSET` exported from `crop-marks.tsx`, boot label removed and % counter moved, Title FIG. 01 moved to `top: 190`, scene index copy in `components/showreel/chapters.ts`. Reviewed on 3 contact sheets (frames 4–46, 70, 106, 130, 360, 440) by the eighth account, which then set `SIZE` 184 → 170 (the name now sits on the 120 px margin grid) and shortened the ghost trail (fades 32–38) so it no longer smears over the "v0" slam. `tsc` passes.
 - [x] Soundtrack for the credit in `scripts/make-soundtrack.mjs` (10 type ticks from 4, 10 backspace ticks from 20, fling whoosh panned right at 32, lock ticks 38/39), then `pnpm reel:sound`: peak −1.0 dB, section RMS unchanged (title −11.6, finale −10.4 dB)
-- [ ] Re-render the MP4 and the OG image (frame 80) and check them; browser check of the page and the Download button
-- [ ] Update the storyboard in this file and push to `main`
+- [x] Re-render the MP4 and the OG image (frame 80) and check them; browser check of the page and the Download button. `public/showreel/showreel.mp4`: 6,814,615 bytes, h264 1920×1080 15.000 s + AAC 15.019 s; MP4 frames 18 and 45 and `app/opengraph-image.jpg` look right; the dev server sends it as `attachment; filename="krushna-hon-showreel-2026.mp4"`. Browser: at top level, clicking "DOWNLOAD MP4" saves the file (`agent-browser download`). Inside an iframe with v0's sandbox flags (no `allow-downloads`), the click opens a new top-level tab that receives the attachment (see **Verify**).
+- [x] Update the storyboard in this file and push to `main` (fast-forward from `v0/krushna-credit-1027`)
 
 ## Sandbox setup (every new sandbox)
 `pnpm reel:setup` runs all of this (`scripts/setup-sandbox.sh`):
@@ -128,8 +131,9 @@ pnpm exec remotion browser ensure
 - Transitions are cover cuts: a slat wipe, iris, whip-pan smear or color flash frame covers the whole frame exactly at the cut.
 
 ### Storyboard (30 fps, 450 frames)
-- **0–30 BOOT**: crop marks snap in, a Signal line draws edge to edge (`evolvePath`), mono text types "LOADING REEL_2026.MOV", the line collapses to a dot.
-- **30–105 TITLE**: the dot pops, giant "v0" slams in (spring overshoot + RGB-split ghosts), "MOTION DESIGNER" letters rise out of masks with wdth 62→125 breathing, mono "SELECTED WORK 2024—2026". Slat wipe out.
+- **0–30 BOOT**: crop marks snap in, a Signal line draws edge to edge (`evolvePath`). Above it, the creator credit (`overlays/credit.tsx`): "KRUSHNA HON" (Archivo 170 px, wght 900) rises letter by letter out of the line while unfolding wdth 62→125, with a decaying Signal/Cobalt RGB split; mono "CREATED BY" types on (4–10) and backspaces (20–24); log lines and a % counter sit below the line on the same 120 px margins. 25–30: the name squeezes (anticipation) while the line collapses to a dot.
+- **30–105 TITLE**: the dot pops and giant "v0" slams in (spring overshoot + RGB-split ghosts). The same shockwave flings the name along an arc into the top-right crop mark (Signal ghost trail + velocity skew), where a Signal lock frame contracts onto it (38–47). "MOTION DESIGNER" letters rise out of masks with wdth 62→125 breathing, mono "SELECTED WORK 2024—2026". Slat wipe out.
+- **38–446 CREDIT BUG**: "KRUSHNA HON" (24 px) stays inside the top-right crop mark over every scene (`mixBlendMode: difference`, so it turns teal on Signal and stays readable on Bone, Ink and Cobalt), with a small RGB pulse on each cut. It fades with the HUD (438–446) under the closing letterbox.
 - **105–165 01 KINETIC TYPE**: one word per beat, "TIMING." "SPACING." "EASING." "RHYTHM.", and the background color flips every beat. Skew/stretch with trailing ghost copies (fake motion blur).
 - **165–225 02 SHAPE**: circle → square → triangle → star morph (`interpolatePath`), orbiting satellites, a 16×9 dot grid rippling out from the center.
 - **225–285 03 GENERATIVE**: about 300 particles in a `noise3D` flow field (SVG) converge into a ring on the downbeat. Iris wipe out.
@@ -191,3 +195,5 @@ Keep the video at 15 s / 450 frames, so every scene timing, the soundtrack grid 
 - Encoded frames look right: pull one or two frames from the MP4 by seeking (command in **Pitfalls**) and open the PNGs.
 - Download link: `curl -s -o /dev/null -w "%{http_code} %{content_type}\n" http://localhost:3000/showreel/showreel.mp4` → `200 video/mp4`
 - Screenshot the page once in a browser (unmute the Player: frames must keep advancing).
+- Download button, top level: `agent-browser open http://localhost:3000`, `agent-browser snapshot -i`, then `agent-browser download @<DOWNLOAD MP4 ref> /tmp/agent-browser/reel.mp4` → "Download saved". (`wait --text "Download MP4"` times out: the label is CSS-uppercased, so wait on nothing and use `snapshot`.)
+- Download button inside a v0-style iframe: write a temporary `public/__frame-test.html` containing `<iframe src="/" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox">`, `agent-browser open http://localhost:3000/__frame-test.html`, `snapshot -i` (the iframe's links get refs), click its "DOWNLOAD MP4" ref, then `agent-browser tab list`: a new blank tab means the click escaped to a top-level tab, where the attachment downloads. (`agent-browser download` times out there because the download happens in the new tab.) Close the tab and delete the file before committing.
