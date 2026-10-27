@@ -1,4 +1,5 @@
 import { ArrowDownToLine } from "lucide-react";
+import { DownloadLink } from "./download-link";
 
 export function SiteHeader() {
   return (
@@ -9,14 +10,10 @@ export function SiteHeader() {
           v0 — Motion reel 2026
         </p>
         <p className="hidden text-muted-foreground md:block">1920×1080 · 30 fps · 120 BPM</p>
-        <a
-          href="/showreel/showreel.mp4"
-          download
-          className="flex items-center gap-2 text-bone transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal"
-        >
+        <DownloadLink className="flex items-center gap-2 text-bone transition-colors hover:text-signal focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal">
           Download
           <ArrowDownToLine aria-hidden="true" className="size-3.5" />
-        </a>
+        </DownloadLink>
       </div>
     </header>
   );

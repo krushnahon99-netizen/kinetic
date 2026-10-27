@@ -10,7 +10,7 @@ Follow-ups from the owner (2026-10-27), in their words:
 2. "You have to add, at first the 'Created by Krushna Hon' and animate,design, etc. At first it'll in big and then by motion graphics and effects it goes to a corner, only as Krushna Hon and stays there through whole video"
 
 ## Status
-Original request: **100% done** (450-frame video, web page, soundtrack, final MP4). Follow-ups 1 and 2: **in progress, about 10%** (planned under **Decisions**, nothing built yet).
+Original request: **100% done** (450-frame video, web page, soundtrack, final MP4). Follow-ups 1 and 2: **in progress, about 40%** (download fix built; credit code written, not reviewed).
 Last updated: 2026-10-27 by v0 (seventh account).
 
 ## Done
@@ -48,8 +48,8 @@ Change loop:
 - [x] Synthesized soundtrack
 - [x] Render `public/showreel/showreel.mp4`
 - [x] Final screenshot of the page in a browser
-- [ ] Follow-up 1: download fix (see **Download fix**)
-- [ ] Follow-up 2: `remotion/overlays/credit.tsx` + boot changes (see **Creator credit**), reviewed on contact sheets, `tsc` passes
+- [x] Follow-up 1: download fix (see **Download fix**): `components/showreel/download-link.tsx` used by both buttons, `Content-Disposition` header in `next.config.mjs` (checked with `curl -I`). The browser click check is in the last item.
+- [ ] Follow-up 2: `remotion/overlays/credit.tsx` + boot changes (see **Creator credit**), reviewed on contact sheets, `tsc` passes. Code written (credit overlay, `cropOffset`/`INSET` exported from `crop-marks.tsx`, boot label removed and % counter moved, Title FIG. 01 moved to `top: 190`, scene index copy in `components/showreel/chapters.ts`) but not reviewed yet.
 - [ ] Soundtrack for the credit in `scripts/make-soundtrack.mjs`, then `pnpm reel:sound`
 - [ ] Re-render the MP4 and the OG image (frame 80) and check them; browser check of the page and the Download button
 - [ ] Update the storyboard in this file and push to `main`

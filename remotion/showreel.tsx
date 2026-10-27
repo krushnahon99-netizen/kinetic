@@ -3,6 +3,7 @@ import { Audio } from "@remotion/media";
 import { AbsoluteFill, Sequence, staticFile } from "remotion";
 import { ensureFonts } from "./lib/fonts";
 import { COLORS, SCENES, type SceneId } from "./lib/theme";
+import { Credit } from "./overlays/credit";
 import { CropMarks } from "./overlays/crop-marks";
 import { Grain } from "./overlays/grain";
 import { Hud } from "./overlays/hud";
@@ -50,6 +51,7 @@ export const ShowreelPicture = () => (
     <WhipPan at={SCENES.finale.from} />
 
     <CropMarks />
+    <Credit />
     <Letterbox />
     <Hud />
     <Grain />

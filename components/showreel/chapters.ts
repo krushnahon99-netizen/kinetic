@@ -1,8 +1,8 @@
 import { SCENE_ORDER, SCENES, VIDEO, type SceneId } from "@/remotion/lib/theme";
 
 const TECHNIQUES: Record<SceneId, string> = {
-  boot: "Crop marks snap in, a path draws edge to edge and the boot line types on, then collapses to a dot.",
-  title: "A spring-overshoot slam with RGB-split ghosts. Letters rise out of masks while the width axis breathes 62→125.",
+  boot: "Crop marks snap in, a path draws edge to edge and “Created by Krushna Hon” rises out of it on the width axis, then the line collapses to a dot.",
+  title: "The drop flings the name into the top-right corner, where it stays. A spring-overshoot slam with RGB-split ghosts; letters rise out of masks while the width axis breathes 62→125.",
   kinetic: "One word per beat. Skew-and-stretch poses trail six ghost copies as fake motion blur.",
   shape: "Circle, square, triangle, star: one 120-ray radial morph, with satellites depth-sorted on tilted orbits.",
   generative: "300 particles in a noise flow field lock into a ring on the downbeat, bloom into a rose, then collapse.",

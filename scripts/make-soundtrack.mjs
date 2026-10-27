@@ -300,19 +300,23 @@ const barOf = (frame) => Math.min(7, Math.floor(frame / BAR));
 const inBreak = (frame) => frame >= 375 && frame < 390; // drums drop out while the finale collapses to a dot
 const END = 435; // the letterbox starts closing; the whole track tape-stops by 446
 
-// BOOT 0–30: crop marks snap in, the Signal line draws left to right, the label types on and deletes, the line collapses.
+// BOOT 0–30: crop marks snap in, the Signal line draws left to right, "CREATED BY" types on (one tick per character,
+// 1.7 per frame from 4) and backspaces (2.5 per frame from 20), the line collapses.
 tick(1, { freq: 5200, gain: 0.08, pan: -0.7 });
 tick(1.5, { freq: 5600, gain: 0.08, pan: 0.7 });
 sweep(2, 14, 220, 880, { gain: 0.06, pan: (t) => -0.8 + 1.6 * Math.min(1, t / 0.4) });
-for (let k = 1; k <= 21; k++) {
+for (let k = 1; k <= 10; k++) {
   tick(4 + k / 1.7, { freq: 2200 + rand() * 1600, gain: 0.06, pan: rand() * 0.6 - 0.3, decay: 0.004 });
 }
-for (let f = 20; f <= 26; f++) tick(f, { freq: 4400, gain: 0.04, decay: 0.003 });
+for (let k = 1; k <= 10; k++) tick(20 + k / 2.5, { freq: 4400, gain: 0.04, decay: 0.003 });
 sweep(19, 29, 880, 110, { gain: 0.05 });
 whoosh(30, 0.4, { from: 600, to: 5000, gain: 0.22 });
 
-// 30: the drop. The dot pops and "v0" slams in.
+// 30: the drop. The dot pops and "v0" slams in; the credit is flung to the top-right corner and locks into it at 38.
 impact(30, { gain: 0.9, crash: 0.24 });
+whoosh(32, 0.07, { from: 2500, to: 9000, gain: 0.14, tail: 0.3, pan: (t) => Math.min(0.85, 0.15 + t * 3) });
+tick(38, { freq: 6400, gain: 0.07, pan: 0.8, decay: 0.005, verb: 0.3 });
+tick(39, { freq: 4800, gain: 0.05, pan: 0.8, decay: 0.004, verb: 0.3 });
 
 // Groove: kick on every beat, off-beat hats (open on the last off-beat of each bar), off-beat bass,
 // clap on the backbeat from the first scene cut, 16th ghost hats through the middle scenes.

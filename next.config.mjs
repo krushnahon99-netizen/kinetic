@@ -17,6 +17,12 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
+      {
+        source: '/showreel/showreel.mp4',
+        headers: [
+          { key: 'Content-Disposition', value: 'attachment; filename="krushna-hon-showreel-2026.mp4"' },
+        ],
+      },
     ]
   },
 }

@@ -2,16 +2,18 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import { beatPulse, pop, tween } from "../lib/easing";
 import { COLORS, LETTERBOX } from "../lib/theme";
 
-const INSET = 40;
+export const INSET = 40;
 const ARM = 44;
+
+/** How far the marks sit outside their rest position: they spring in during the boot, then kick 5 px inward on every beat. */
+export const cropOffset = (frame: number, fps: number) => (1 - pop(frame, fps, 1)) * 90 - beatPulse(frame) * 5;
 
 /** Corner marks that snap in during the boot and kick inward on every beat. */
 export const CropMarks = () => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
 
-  const travel = (1 - pop(frame, fps, 1)) * 90;
-  const offset = travel - beatPulse(frame) * 5;
+  const offset = cropOffset(frame, fps);
   const opacity = tween(frame, [0, 3], [0, 1]);
 
   const corners = [

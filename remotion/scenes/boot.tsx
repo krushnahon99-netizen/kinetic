@@ -4,14 +4,16 @@ import { expoIn, lerp, progress } from "../lib/easing";
 import { COLORS } from "../lib/theme";
 import { mono } from "../lib/type";
 
-const LABEL = "LOADING REEL_2026.MOV";
 const LOG = [
   "[OK] ARCHIVO VARIABLE  wdth 62—125  wght 100—900",
   "[OK] TEMPO 120 BPM  ·  15 FRAMES PER BEAT",
   "[OK] PALETTE  INK · BONE · SIGNAL · COBALT",
 ];
 
-/** 0–30: a Signal line draws edge to edge while the reel "loads", then collapses into the dot the title pops from. */
+/**
+ * 0–30: a Signal line draws edge to edge under the creator credit (overlays/credit.tsx) while the reel "loads",
+ * then collapses into the dot the title pops from.
+ */
 export const Boot = () => {
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
@@ -24,10 +26,6 @@ export const Boot = () => {
   const linePath = `M 0 ${cy} L ${width} ${cy}`;
   const { strokeDasharray, strokeDashoffset } = evolvePath(draw, linePath);
 
-  const typed = Math.floor(Math.max(0, frame - 4) * 1.7);
-  const deleted = Math.floor(Math.max(0, frame - 19) * 3);
-  const shown = Math.max(0, Math.min(LABEL.length, typed) - deleted);
-  const caretOn = Math.floor(frame / 3) % 2 === 0;
   const textOpacity = 1 - progress(frame, 18, 6);
 
   return (
@@ -72,19 +70,12 @@ export const Boot = () => {
         />
       ) : null}
 
-      <div style={{ position: "absolute", left: 120, top: cy - 62, display: "flex", alignItems: "center", gap: 6 }}>
-        <span style={mono(22, { letterSpacing: "0.2em" })}>{LABEL.slice(0, shown)}</span>
-        {frame < 27 ? (
-          <span style={{ width: 12, height: 24, backgroundColor: COLORS.signal, opacity: caretOn ? 1 : 0 }} />
-        ) : null}
-      </div>
-
       <span
         style={{
           ...mono(22, { letterSpacing: "0.2em" }),
           position: "absolute",
           right: 120,
-          top: cy - 62,
+          top: cy + 40,
           opacity: textOpacity,
         }}
       >

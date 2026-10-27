@@ -1,4 +1,5 @@
 import { ArrowDownToLine } from "lucide-react";
+import { DownloadLink } from "./download-link";
 
 const SPEC = [
   { term: "Runtime", detail: "00:15 · 450 frames" },
@@ -29,17 +30,13 @@ export function ReelSpec() {
       </div>
 
       <div className="flex flex-col gap-3">
-        <a
-          href="/showreel/showreel.mp4"
-          download
-          className="group flex items-center justify-between gap-3 bg-signal px-5 py-4 font-mono text-sm font-medium uppercase tracking-[0.14em] text-ink transition-colors hover:bg-bone focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal"
-        >
+        <DownloadLink className="group flex items-center justify-between gap-3 bg-signal px-5 py-4 font-mono text-sm font-medium uppercase tracking-[0.14em] text-ink transition-colors hover:bg-bone focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal">
           Download MP4
           <ArrowDownToLine
             aria-hidden="true"
             className="size-4 motion-safe:transition-transform motion-safe:group-hover:translate-y-0.5"
           />
-        </a>
+        </DownloadLink>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">H.264 · 1080p · 15 s</p>
       </div>
     </section>

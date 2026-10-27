@@ -181,7 +181,7 @@ export const Title = () => {
         <Subtitle frame={frame} />
       </AbsoluteFill>
 
-      <Callout frame={frame} start={20} lines={["FIG. 01 — SLAM", "SPRING  k180 · c12 · m0.6"]} style={{ right: 120, top: 150 }} />
+      <Callout frame={frame} start={20} lines={["FIG. 01 — SLAM", "SPRING  k180 · c12 · m0.6"]} style={{ right: 120, top: 190 }} />
       <Callout frame={frame} start={26} lines={["FIG. 02 — BREATHE", "VAR AXIS  wdth 62—125"]} style={{ left: 120, bottom: 150 }} />
     </AbsoluteFill>
   );
