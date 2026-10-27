@@ -6,7 +6,7 @@ Live status of this project. Any AI assistant: read this first, continue from **
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
 
 ## Status
-**About 25% done.** Setup, shared lib, Remotion root and all persistent overlays are written, and a test still renders correctly. No scenes yet.
+**About 40% done.** Shared lib, overlays, all four transitions and the Boot + Title scenes are written and reviewed. Six scenes left, then the page and the MP4.
 Last updated: 2026-10-27 by v0.
 
 ## Done
@@ -18,14 +18,17 @@ Last updated: 2026-10-27 by v0.
 - [x] `remotion/index.ts` + `remotion/root.tsx`
 - [x] `remotion/showreel.tsx` with persistent overlays in `remotion/overlays/`: `grain.tsx`, `crop-marks.tsx`, `letterbox.tsx`, `hud.tsx`
 - [x] Test still of frame 70 renders: fonts load, HUD, crop marks, grain and letterbox look right
+- [x] `remotion/lib/type.tsx`: `mono(size, extra)`, `display(size, wdth, wght, extra)` style helpers and `<Typed>` (type-on that reserves full width)
+- [x] `remotion/transitions/`: `flash.tsx`, `slat-wipe.tsx`, `iris.tsx`, `whip-pan.tsx`, already placed in `showreel.tsx` at the cuts 105 (slat), 165/225/345 (flash), 285 (iris), 375 (whip)
+- [x] `remotion/scenes/boot.tsx` and `remotion/scenes/title.tsx`, reviewed on a contact sheet (frames 6–105 look right; slat wipe fully covers at 105)
+- [x] `remotion/contact-sheet.tsx`: `ContactSheet` composition that renders up to 9 frozen frames in one still (see **Verify**)
 
 ## Next step
 1. New sandbox? Do **Sandbox setup** below first.
-2. Write `remotion/transitions/` (slat-wipe, iris, flash, whip-pan) and the first scenes `remotion/scenes/boot.tsx` + `remotion/scenes/title.tsx`, add them to `remotion/showreel.tsx` as `<Sequence>`s (use `SCENES` from `lib/theme.ts` for from/duration), render stills at frames 15, 45, 70 and 100, look at them, fix, then commit and push.
+2. Write `remotion/scenes/kinetic-type.tsx` (export `KineticType`) and `remotion/scenes/shape.tsx` (export `Shape`), add both to `SCENE_COMPONENTS` in `remotion/showreel.tsx`, review with the contact sheet (frames 106, 112, 122, 137, 152, 166, 180, 195, 215), fix, then commit and push.
 
 ## Remaining
-- [ ] `remotion/transitions/`: slat-wipe, iris, flash, whip-pan (cover cuts)
-- [ ] Scenes in `remotion/scenes/`: boot, title, kinetic-type, shape, generative, depth, montage, finale
+- [ ] Scenes in `remotion/scenes/`: kinetic-type, shape, generative, depth, montage, finale
 - [ ] `components/showreel-player.tsx`, `app/page.tsx`, metadata in `app/layout.tsx`
 - [ ] Review stills and fix problems
 - [ ] Render `public/showreel/showreel.mp4`
@@ -71,7 +74,8 @@ pnpm exec remotion browser ensure
 ### Files
 - `remotion/index.ts`: `registerRoot(RemotionRoot)`. Never import this file from the Next app.
 - `remotion/root.tsx`: `<Composition id="Showreel" component={Showreel} durationInFrames={450} fps={30} width={1920} height={1080} />` (values come from `VIDEO` in `lib/theme.ts`)
-- `remotion/showreel.tsx`: calls `ensureFonts()` at module level; scenes as back-to-back `<Sequence>`s, then transitions, then overlays in this order: `CropMarks`, `Letterbox`, `Hud`, `Grain` (grain always on top)
+- `remotion/showreel.tsx`: calls `ensureFonts()` at module level; scenes are listed in `SCENE_COMPONENTS` (`{ id, Component }`) and mapped to back-to-back `<Sequence>`s using `SCENES[id]`; then transitions (global frames via `at`), then overlays in this order: `CropMarks`, `Letterbox`, `Hud`, `Grain` (grain always on top). Scene components read the local frame from `useCurrentFrame()` (0 = scene start).
+- `remotion/contact-sheet.tsx` + second composition `ContactSheet` in `root.tsx`: wraps `<Showreel>` in `<Freeze frame={n}>` per tile (2×2 for ≤4 frames, else 3×3), each tile labelled with its frame number
 - `remotion/lib/theme.ts`: `COLORS`, `VIDEO`, `BEAT` (15) / `BAR` (60), `LETTERBOX` (60 px), `DISPLAY_STACK` / `MONO_STACK`, `SCENES` (from, duration and HUD label per scene), `sceneAt(frame)`, `axes(wdth, wght)` → `fontVariationSettings` string
 - `remotion/lib/easing.ts`: `expoOut` / `expoIn` / `expoInOut`, `OVERSHOOT`, `CLAMP`, `tween(frame, [start, end], [from, to], easing)`, `progress(frame, start, duration, easing)`, `pop(frame, fps, delay)` (overshoot spring), `lerp`, `clamp01`, `beatPulse(frame)` (1 on each beat, decays)
 - `remotion/lib/fonts.ts`: `ensureFonts()` loads both fonts with `@remotion/fonts`; returns early when `typeof window === "undefined"` (Next SSR has no FontFace)
@@ -110,6 +114,7 @@ A Node script synthesizes a 15 s, 120 BPM WAV (kick on every beat, off-beat hats
 - Render fails with "Failed to launch the browser process … libnspr4.so" → run the `dnf install` line from **Sandbox setup**.
 
 ## Verify
-- Render stills, then open the PNGs and look at them: `pnpm exec remotion still remotion/index.ts Showreel /tmp/stills/f070.png --frame=70 --log=error`, plus frames 15, 130, 195, 255, 315, 360 and 430. Fix clipping, overflow and empty frames.
+- Fastest review: one contact sheet of up to 9 frames, then open the PNG and look at it: `pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195,255,315,360,400,430]}' --log=error`. Fix clipping, overflow and empty frames.
+- Single full-size frame: `pnpm exec remotion still remotion/index.ts Showreel /tmp/stills/f070.png --frame=70 --log=error`
 - Final render (in the background, with a timeout): `pnpm exec remotion render remotion/index.ts Showreel public/showreel/showreel.mp4 --codec=h264 --crf=18`
 - Screenshot the page once in a browser.
