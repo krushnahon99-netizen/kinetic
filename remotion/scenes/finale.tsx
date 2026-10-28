@@ -11,9 +11,10 @@ const SUB = BEAT * 2;
 const HIRE = BEAT * 3;
 
 /** Lockup center; sits a little above the picture center so the pill row below balances it. */
-const LOCK_Y = 484;
+export const LOCK_Y = 484;
 const CIRCLE = 320;
-const DOT = 12;
+/** Radius of the dot the seal pops from at global 390. */
+export const DOT = 12;
 const RING_R = 214;
 const RING_SIZE = 15;
 const RING_TEXT = "MOTION DESIGN REEL 2026 — SELECTED WORK 2024—2026 — ".repeat(2);

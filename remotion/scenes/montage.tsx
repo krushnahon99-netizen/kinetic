@@ -10,7 +10,7 @@ import { KineticType } from "./kinetic-type";
 import { Shape } from "./shape";
 import { Title } from "./title";
 
-type Clip = { id: SceneId; Scene: ComponentType; frame: number };
+export type Clip = { id: SceneId; Scene: ComponentType; frame: number };
 
 type TileState = {
   clip: Clip;
@@ -21,17 +21,17 @@ type TileState = {
   flashColor: string;
 };
 
-const PICTURE_W = VIDEO.width;
-const PICTURE_H = VIDEO.height - LETTERBOX * 2;
-const COLS = 3;
-const ROWS = 3;
+export const PICTURE_W = VIDEO.width;
+export const PICTURE_H = VIDEO.height - LETTERBOX * 2;
+export const COLS = 3;
+export const ROWS = 3;
 const GUTTER = 10;
-const TILE_W = (PICTURE_W - GUTTER * (COLS - 1)) / COLS;
-const TILE_H = (PICTURE_H - GUTTER * (ROWS - 1)) / ROWS;
-const STEP_X = TILE_W + GUTTER;
-const STEP_Y = TILE_H + GUTTER;
+export const TILE_W = (PICTURE_W - GUTTER * (COLS - 1)) / COLS;
+export const TILE_H = (PICTURE_H - GUTTER * (ROWS - 1)) / ROWS;
+export const STEP_X = TILE_W + GUTTER;
+export const STEP_Y = TILE_H + GUTTER;
 /** Scale at which a scene's 1920×960 picture area covers one tile. */
-const INNER = Math.max(TILE_W / PICTURE_W, TILE_H / PICTURE_H);
+export const INNER = Math.max(TILE_W / PICTURE_W, TILE_H / PICTURE_H);
 /** Wall scale at which the center tile fills the whole picture area (the opening frame). */
 const ZOOM_IN = Math.max(PICTURE_W / TILE_W, PICTURE_H / TILE_H);
 
@@ -44,7 +44,7 @@ const SYNC_FLASH = [1, 0.55, 0.2];
 const makeClip = (id: SceneId, Scene: ComponentType, frame: number): Clip => ({ id, Scene, frame });
 
 /** Repeats title → kinetic → shape → generative → depth, so neighbouring indices never share a scene. */
-const CLIPS: Clip[] = [
+export const CLIPS: Clip[] = [
   makeClip("title", Title, 44),
   makeClip("kinetic", KineticType, 8),
   makeClip("shape", Shape, 22),
