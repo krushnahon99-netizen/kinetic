@@ -1,6 +1,7 @@
 # HANDOFF.md: 15-second motion design showreel
 
 Live status of this project. Any AI assistant: read this first, continue from **Next step**, and update this file after every milestone so another chatbot can take over at any time. Full rules: `AGENTS.md`.
+Short on credits? Everything above **Sandbox setup** (Goal → Remaining) tells you what to do next. The sections below it are reference: Read or Grep only the one your task needs.
 
 ## Goal
 "Make a dynamic 15-second motion graphics video that shows what an incredible motion designer you are, like it's your showreel for a résumé. Go all out."
@@ -10,8 +11,8 @@ Follow-ups from the owner (2026-10-27), in their words:
 2. "You have to add, at first the 'Created by Krushna Hon' and animate,design, etc. At first it'll in big and then by motion graphics and effects it goes to a corner, only as Krushna Hon and stays there through whole video"
 
 ## Status
-Original request and follow-ups 1 and 2: **100% done** (450-frame video with the "Created by Krushna Hon" credit, web page, soundtrack, final MP4, working Download buttons).
-Last updated: 2026-10-27 by v0 (eighth account).
+Original request and follow-ups 1 and 2: **100% done** (450-frame video with the "Created by Krushna Hon" credit, web page, soundtrack, final MP4, working Download buttons). Only the owner's answer to one open question is pending (see **Next step**).
+Last updated: 2026-10-28 by v0 (ninth account). No code changes: the ninth account confirmed that `main` has the newest work (all outputs present, MP4 6,814,615 bytes), checked every remote branch (see **Pitfalls**), raised the open question with the owner and wrote the plan for it under **Remaining** (Follow-up 3).
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -37,14 +38,13 @@ Last updated: 2026-10-27 by v0 (eighth account).
 - [x] Final browser check at 1440×900: the Player autoplays muted; after clicking "Unmute sound" it keeps playing in real time (HUD TC 00:00:08:10 → 00:00:10:25 in 2.6 s) and the scene index follows (GENERATIVE → DEPTH). Header, hero, player, spec sheet, scene index and footer all lay out correctly.
 
 ## Next step
-Nothing is queued: every requested item is done and pushed to `main`. Wait for the owner's next request.
-Open question to raise with the owner (not requested, so not changed): the HUD ("v0 — MOTION REEL 2026"), the site header and page title ("v0 — Motion reel 2026"), and the finale (the "v0" seal, the credits DIRECTION / DESIGN / MOTION: v0, "→ v0.app") still credit v0. Ask whether they should say Krushna Hon.
-Before starting new work, confirm `main` is the newest state. A v0 import fetches only `main`, so a plain `git fetch origin` does not see other branches:
+Wait for the owner's answer to the open question below, then act on it. Nothing else is queued.
+Open question (raised again by the ninth account on 2026-10-28, not answered yet): the HUD, the site header and page title, the title card, a cube face and the finale still credit "v0". Should they say Krushna Hon? A yes needs two details from the owner: (a) the big "v0" letters become the monogram "KH" (recommended: same layout and timing) or the full name, and (b) what replaces the "→ v0.app" link (email, portfolio URL or handle). Then do Follow-up 3 under **Remaining**. A no: delete Follow-up 3 and wait for the next request.
+Before starting new work, confirm `main` is the newest state. A v0 import fetches only `main`, so a plain `git fetch origin` does not see other branches. Run `git ls-remote --heads origin` and compare it with the branch list in **Pitfalls**. Only a branch that is new or has moved needs a look:
 ```bash
-git ls-remote --heads origin
-git fetch origin +refs/heads/v0/krushna-credit-1027:refs/remotes/origin/v0/krushna-credit-1027 && git log --oneline main..origin/v0/krushna-credit-1027
+git fetch origin +refs/heads/<branch>:refs/remotes/origin/<branch> && git log --oneline main..origin/<branch>
 ```
-If the second command lists commits, run `git checkout -b v0/krushna-credit-1027 origin/v0/krushna-credit-1027` and read this file again there; otherwise stay on `main`. For new work: add the request under **Goal** and its steps under **Remaining**, start a fresh branch with SyncGit (`branchName: v0/<topic>-<date>`), and follow the change loop below.
+If that lists real work, run `git checkout -b <branch> origin/<branch>` and read this file again there; otherwise stay on `main`. For new work: add the request under **Goal** and its steps under **Remaining**, start a fresh branch with SyncGit (`branchName: v0/<topic>-<date>`), and follow the change loop below.
 Change loop:
 1. New sandbox? Run `pnpm reel:setup` first (see **Sandbox setup**).
 2. Edit the scene in `remotion/scenes/` (or the page in `components/showreel/`), then review it with a contact sheet (see **Verify**) and `pnpm exec tsc --noEmit`.
@@ -60,6 +60,7 @@ Change loop:
 - [x] Soundtrack for the credit in `scripts/make-soundtrack.mjs` (10 type ticks from 4, 10 backspace ticks from 20, fling whoosh panned right at 32, lock ticks 38/39), then `pnpm reel:sound`: peak −1.0 dB, section RMS unchanged (title −11.6, finale −10.4 dB)
 - [x] Re-render the MP4 and the OG image (frame 80) and check them; browser check of the page and the Download button. `public/showreel/showreel.mp4`: 6,814,615 bytes, h264 1920×1080 15.000 s + AAC 15.019 s; MP4 frames 18 and 45 and `app/opengraph-image.jpg` look right; the dev server sends it as `attachment; filename="krushna-hon-showreel-2026.mp4"`. Browser: at top level, clicking "DOWNLOAD MP4" saves the file (`agent-browser download`). Inside an iframe with v0's sandbox flags (no `allow-downloads`), the click opens a new top-level tab that receives the attachment (see **Verify**).
 - [x] Update the storyboard in this file and push to `main` (fast-forward from `v0/krushna-credit-1027`)
+- [ ] Follow-up 3, **only after the owner says yes** (see **Next step**): replace the remaining "v0" credits. Line numbers as of `cca7517`. Video: `remotion/overlays/hud.tsx:70` ("v0 — MOTION REEL 2026"); `remotion/scenes/title.tsx` lines 160/163/165/176 (the giant "v0" and its Signal/Cobalt ghosts; its style `v0` = `display(V0_SIZE, 125, 900, …)` at line 110); `remotion/scenes/depth.tsx:41` (cube face "v0"); `remotion/scenes/finale.tsx:321` (seal "v0"), `:34–36` (credits DIRECTION / DESIGN / MOTION), `:339` ("→ v0.app"). Page: `components/showreel/site-header.tsx:10`, `components/showreel/site-footer.tsx:11` + `:14` (link and "→ v0.app"), `components/showreel-player.tsx:92` (description), `app/layout.tsx:7` (title), `app/opengraph-image.alt.txt`. Not visible credits, leave them unless the owner asks: `generator: 'v0.app'` in `layout.tsx` and the iframe comment in `download-link.tsx`. Keep every timing, so the soundtrack stays as it is. Check that "KH" (wider than "v0") fits `V0_SIZE`, the seal and the cube face, and that the 11-letter name fits the finale credits column. Then the change loop: contact sheet of frames `[40,80,300,330,344,395,410,425,432]`, `tsc`, re-render the MP4 and the OG image (frame 80), browser check, update this file, push to `main`.
 
 ## Sandbox setup (every new sandbox)
 `pnpm reel:setup` runs all of this (`scripts/setup-sandbox.sh`):
@@ -185,7 +186,8 @@ Keep the video at 15 s / 450 frames, so every scene timing, the soundtrack grid 
 - Don't open earlier v0 chats with the default `v0_messages_list` (20 messages): the result is huge and stalled the fifth account's run. Everything needed is in this file. If the owner asks you to read a chat, pass `limit: 2` (newest first; the returned `cursor` pages to older messages).
 - The v0 preview iframe blocks downloads (no `allow-downloads`). Test downloads at top level (agent-browser on `http://localhost:3000`) and keep the iframe fallback in `download-link.tsx`.
 - A v0 import is a single-branch clone (`remote.origin.fetch` = `main` only), so `git fetch origin` and `git checkout <branch>` cannot see other branches. List them with `git ls-remote --heads origin` and fetch one with `git fetch origin +refs/heads/<branch>:refs/remotes/origin/<branch>`.
-- The remote has stale branches from earlier accounts (`v0/kinetic-showreel`, `v0/kinetic-showreel-7b86`, `v0/kinetic-showreel-858a`, `v0/kinetic-soundtrack`, …); `main` has everything. SyncGit reuses an existing branch with the same name, so give it a new one (e.g. `v0/<topic>-<date>`) to start from `main`'s HEAD.
+- Remote branches as checked on 2026-10-28 (ninth account): `main` has everything. Already in `main`: `v0/krushna-credit-1027` (eighth account) and `v0/handoff-1028` (ninth). Stale, never merge: `v0/kinetic-showreel` (`0b80c3e`), `v0/kinetic-showreel-7b86` (`75b6d73`), `v0/kinetic-showreel-858a` (`a2e4938`), `v0/kinetic-soundtrack` (`fae9d79`), `v0/kinetic-final-render` (`5f1c7ba`: only adds the temporary `public/__frame-test.html` from the iframe download test), `v0/project-setup-and-implementation-4053cdc1` (`7a7851f`: an early draft of `scripts/make-soundtrack.mjs`; `main` has the final one). SyncGit reuses an existing branch with the same name, so give it a new one (e.g. `v0/<topic>-<date>`) to start from `main`'s HEAD.
+- v0's memory (`v0_memories/`) belongs to one account and does not carry over when the owner switches accounts. Keep all project knowledge in this file and on `main`.
 
 ## Verify
 - Fastest review: one contact sheet of up to 9 frames, then open the PNG and look at it: `pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195,255,315,360,400,430]}' --log=error`. Fix clipping, overflow and empty frames.
