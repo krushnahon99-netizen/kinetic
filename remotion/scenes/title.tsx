@@ -6,7 +6,8 @@ import { Typed, display, mono } from "../lib/type";
 
 const WORD = Array.from("MOTION DESIGNER");
 const SUBTITLE = "SELECTED WORK 2024—2026";
-const V0_SIZE = 560;
+const MONOGRAM = "KH";
+const MONOGRAM_SIZE = 560;
 const WORD_SIZE = 128;
 
 const LayoutGrid = ({ frame, width, height }: { frame: number; width: number; height: number }) => {
@@ -84,7 +85,7 @@ const Callout = ({ frame, start, lines, style }: { frame: number; start: number;
   </div>
 );
 
-/** 30–105: the boot dot pops, "v0" slams in with RGB-split ghosts, the subtitle letters rise and breathe. */
+/** 30–105: the boot dot pops, the "KH" monogram slams in with RGB-split ghosts, the subtitle letters rise and breathe. */
 export const Title = () => {
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
@@ -107,7 +108,7 @@ export const Title = () => {
   const sliceTop = 12 + Math.floor(random(`title-slice-${beatIndex}`) * 66);
   const sliceShift = hit * 64 * (random(`title-dir-${beatIndex}`) > 0.5 ? 1 : -1);
 
-  const v0 = display(V0_SIZE, 125, 900, { lineHeight: 0.8, letterSpacing: "-0.03em" });
+  const monogram = display(MONOGRAM_SIZE, 125, 900, { lineHeight: 0.8, letterSpacing: "-0.03em" });
 
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.ink }}>
@@ -156,24 +157,24 @@ export const Title = () => {
             filter: blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : undefined,
           }}
         >
-          <div style={{ ...v0, color: COLORS.signal, position: "absolute", inset: 0, transform: `translateX(${-split}px)`, mixBlendMode: "screen" }}>
-            v0
+          <div style={{ ...monogram, color: COLORS.signal, position: "absolute", inset: 0, transform: `translateX(${-split}px)`, mixBlendMode: "screen" }}>
+            {MONOGRAM}
           </div>
-          <div style={{ ...v0, color: COLORS.cobalt, position: "absolute", inset: 0, transform: `translateX(${split}px)`, mixBlendMode: "screen" }}>
-            v0
+          <div style={{ ...monogram, color: COLORS.cobalt, position: "absolute", inset: 0, transform: `translateX(${split}px)`, mixBlendMode: "screen" }}>
+            {MONOGRAM}
           </div>
-          <div style={{ ...v0, position: "relative" }}>v0</div>
+          <div style={{ ...monogram, position: "relative" }}>{MONOGRAM}</div>
           {hit > 0.05 ? (
             <div
               style={{
-                ...v0,
+                ...monogram,
                 position: "absolute",
                 inset: 0,
                 clipPath: `inset(${sliceTop}% 0 ${100 - sliceTop - 9}% 0)`,
                 transform: `translateX(${sliceShift}px)`,
               }}
             >
-              v0
+              {MONOGRAM}
             </div>
           ) : null}
         </div>

@@ -38,7 +38,7 @@ const FACES = [
   { word: "MAKE", yaw: 0, background: COLORS.bone, color: COLORS.ink, wdth: 62, size: 168, tag: "01/03" },
   { word: "IT", yaw: 90, background: COLORS.signal, color: COLORS.ink, wdth: 125, size: 250, tag: "02/03" },
   { word: "MOVE", yaw: 180, background: COLORS.ink, color: COLORS.bone, wdth: 62, size: 168, tag: "03/03" },
-  { word: "v0", yaw: -90, background: COLORS.cobalt, color: COLORS.bone, wdth: 100, size: 220, tag: "REEL" },
+  { word: "KH", yaw: -90, background: COLORS.cobalt, color: COLORS.bone, wdth: 100, size: 220, tag: "REEL" },
 ] as const;
 
 const mod = (n: number, m: number) => ((n % m) + m) % m;

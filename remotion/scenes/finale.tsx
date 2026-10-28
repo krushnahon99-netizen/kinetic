@@ -31,9 +31,9 @@ const LINES = Array.from({ length: 48 }, (_, i) => ({
 }));
 
 const CREDITS = [
-  ["DIRECTION", "v0"],
-  ["DESIGN", "v0"],
-  ["MOTION", "v0"],
+  ["DIRECTION", "KRUSHNA HON"],
+  ["DESIGN", "KRUSHNA HON"],
+  ["MOTION", "KRUSHNA HON"],
   ["CODE", "REMOTION 4.0"],
 ] as const;
 const ROLE_WIDTH = Math.max(...CREDITS.map(([role]) => role.length)) + 2;
@@ -239,7 +239,7 @@ const HirePill = ({ frame, fps }: { frame: number; fps: number }) => {
 };
 
 /**
- * 375–450: everything collapses into a dot that pops into the Signal "v0" seal (390), the ring type and dial wind
+ * 375–450: everything collapses into a dot that pops into the Signal "KH" seal (390), the ring type and dial wind
  * on, captions and credits type in (405), the hire pill lands on the last downbeat (420) and the letterbox closes.
  */
 export const Finale = () => {
@@ -313,12 +313,12 @@ export const Finale = () => {
           >
             <span
               style={{
-                ...display(156, lerp(62, 125, stretch), 900, { color: COLORS.ink, lineHeight: 1, letterSpacing: "-0.02em" }),
+                ...display(140, lerp(62, 125, stretch), 900, { color: COLORS.ink, lineHeight: 1, letterSpacing: "-0.02em" }),
                 display: "inline-block",
                 transform: `translateY(${(1 - rise) * 120}%)`,
               }}
             >
-              v0
+              KH
             </span>
           </div>
 
@@ -336,7 +336,13 @@ export const Finale = () => {
           >
             <HirePill frame={frame} fps={fps} />
             {frame >= HIRE ? (
-              <Typed text="→ v0.app" frame={frame} start={HIRE + 4} perFrame={1.5} style={mono(20, { letterSpacing: "0.2em" })} />
+              <Typed
+                text="→ github.com/krushnahon99-netizen"
+                frame={frame}
+                start={HIRE + 2}
+                perFrame={5}
+                style={mono(20, { letterSpacing: "0.2em" })}
+              />
             ) : null}
           </div>
         </AbsoluteFill>

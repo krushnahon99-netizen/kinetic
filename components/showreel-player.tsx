@@ -89,8 +89,8 @@ export function ShowreelPlayer({ aside }: ShowreelPlayerProps) {
           ) : null}
         </div>
         <figcaption className="sr-only">
-          v0 motion design reel: 15 seconds in eight scenes. Use the player controls or the scene index below to
-          navigate.
+          Motion design reel by Krushna Hon: 15 seconds in eight scenes. Use the player controls or the scene index
+          below to navigate.
         </figcaption>
       </figure>
 

@@ -4,9 +4,9 @@ import { preload } from 'react-dom'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 — Motion Design Reel 2026',
+  title: 'Krushna Hon — Motion Design Reel 2026',
   description:
-    'A 15-second motion design showreel in eight scenes, cut to a 120 BPM grid. Every frame is a React component rendered with Remotion.',
+    'A 15-second motion design showreel by Krushna Hon, in eight scenes cut to a 120 BPM grid. Every frame is a React component rendered with Remotion.',
   generator: 'v0.app',
   twitter: {
     card: 'summary_large_image',

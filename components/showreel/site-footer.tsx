@@ -8,10 +8,14 @@ export function SiteFooter() {
             Available for hire
           </p>
           <a
-            href="https://v0.app"
-            className="font-mono text-[11px] uppercase tracking-[0.2em] text-bone underline-offset-4 transition-colors hover:text-signal hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal"
+            href="https://github.com/krushnahon99-netizen"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-[11px] tracking-[0.2em] text-bone underline-offset-4 transition-colors hover:text-signal hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-signal"
           >
-            {"→ v0.app"}
+            <span aria-hidden="true">{"→ "}</span>
+            github.com/krushnahon99-netizen
+            <span className="sr-only"> (opens in a new tab)</span>
           </a>
         </div>
         <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">

@@ -67,7 +67,7 @@ export const Hud = () => {
   return (
     <AbsoluteFill style={{ opacity, pointerEvents: "none" }}>
       <div style={{ ...row, top: 0 }}>
-        <span style={mono}>{typeOn("v0 — MOTION REEL 2026", frame, 2)}</span>
+        <span style={mono}>{typeOn("KRUSHNA HON — MOTION REEL 2026", frame, 2, 3)}</span>
         <span style={{ ...mono, ...centered, opacity: 0.45 }}>
           {typeOn("1920×1080 · 30 FPS · 120 BPM", frame, 6)}
         </span>
