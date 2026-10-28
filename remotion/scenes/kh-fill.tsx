@@ -9,7 +9,7 @@ import { CLIPS, COLS, INNER, PICTURE_H, PICTURE_W, ROWS, STEP_X, STEP_Y, TILE_H,
 
 export type KhFillMode = "clips" | "liquid" | "both";
 
-/** Global frames the fill replaces: the montage's second half, the whip-pan and the finale's collapse. */
+/** Global frames the fill covers: the montage's second half and the finale's run-up, up to the seal pop at 390. */
 export const KH_FILL = { from: 360, duration: 30 } as const;
 
 /* Local timeline, 0 = global 360 (impact + zap). Every hit is an existing soundtrack hit. */
@@ -19,9 +19,6 @@ const FLOOD = 22; // 382: clips mode floods Signal
 const SHRINK = 24; // 384: KH starts shrinking into the dot
 const FULL = 26; // 386: the letters are full
 const LAST = 29; // 389: a dot; the finale's seal pops from it at 390
-
-/** Local beats the demo page's cue sheet follows. */
-export const KH_FILL_BEATS = { push: PUSH, shrink: SHRINK } as const;
 
 const POUR_START: Record<KhFillMode, number | null> = { clips: null, liquid: 2, both: PUSH };
 

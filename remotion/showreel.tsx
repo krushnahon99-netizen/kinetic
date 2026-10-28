@@ -20,7 +20,6 @@ import { Title } from "./scenes/title";
 import { FlashFrame } from "./transitions/flash";
 import { Iris } from "./transitions/iris";
 import { SlatWipe } from "./transitions/slat-wipe";
-import { WhipPan } from "./transitions/whip-pan";
 
 ensureFonts();
 
@@ -37,16 +36,16 @@ const SCENE_COMPONENTS: { id: SceneId; Component: ComponentType }[] = [
 
 /**
  * The picture alone. The contact sheet renders up to 9 frozen copies of it, so it carries no audio.
- * `fill` (follow-up 4 demo) replaces global 360–390 with the KH fill: the montage ends at 360 and the whip-pan is
- * dropped. Without it this is exactly the reel.
+ * Global 360–390 is the KH fill the owner approved ("both"): the montage ends at 360 and the fill hands off to the
+ * finale's seal at 390. Passing `fill` swaps in one of the other fills, for review only.
  */
-export const ShowreelPicture = ({ fill }: { fill?: KhFillMode }) => (
+export const ShowreelPicture = ({ fill = "both" }: { fill?: KhFillMode }) => (
   <AbsoluteFill style={{ backgroundColor: COLORS.ink, overflow: "hidden" }}>
     {SCENE_COMPONENTS.map(({ id, Component }) => (
       <Sequence
         key={id}
         from={SCENES[id].from}
-        durationInFrames={fill && id === "montage" ? KH_FILL.from - SCENES.montage.from : SCENES[id].duration}
+        durationInFrames={id === "montage" ? KH_FILL.from - SCENES.montage.from : SCENES[id].duration}
         name={id}
       >
         <Component />
@@ -58,13 +57,9 @@ export const ShowreelPicture = ({ fill }: { fill?: KhFillMode }) => (
     <FlashFrame at={SCENES.generative.from} color={COLORS.signal} />
     <Iris at={SCENES.depth.from} />
     <FlashFrame at={SCENES.montage.from} color={COLORS.cobalt} />
-    {fill ? (
-      <Sequence from={KH_FILL.from} durationInFrames={KH_FILL.duration} name="kh-fill">
-        <KhFill mode={fill} />
-      </Sequence>
-    ) : (
-      <WhipPan at={SCENES.finale.from} />
-    )}
+    <Sequence from={KH_FILL.from} durationInFrames={KH_FILL.duration} name="kh-fill">
+      <KhFill mode={fill} />
+    </Sequence>
 
     <CropMarks />
     <Credit />

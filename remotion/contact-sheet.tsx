@@ -8,7 +8,7 @@ export type ContactSheetProps = { frames: number[]; fill?: KhFillMode };
 /**
  * Review tool: renders up to 9 frames of the reel in a single still, so one render shows a whole sequence.
  * pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195]}'
- * Add "fill":"clips" | "liquid" | "both" to the props to review the KH fill demo.
+ * The reel's KH fill is "both"; add "fill":"clips" or "fill":"liquid" to the props to review the other two.
  */
 export const ContactSheet = ({ frames, fill }: ContactSheetProps) => {
   const columns = frames.length <= 4 ? 2 : 3;

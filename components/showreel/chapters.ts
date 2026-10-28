@@ -7,8 +7,8 @@ const TECHNIQUES: Record<SceneId, string> = {
   shape: "Circle, square, triangle, star: one 120-ray radial morph, with satellites depth-sorted on tilted orbits.",
   generative: "300 particles in a noise flow field lock into a ring on the downbeat, bloom into a rose, then collapse.",
   depth: "A self-similar infinite-zoom tunnel and a CSS 3D type cube turning MAKE, IT, MOVE.",
-  montage: "A 3×3 wall of live frozen frames from earlier scenes ripple-flips, then smears into a whip-pan.",
-  finale: "Everything collapses into a seal: text on a path, a ticking dial and a hire pill on the last downbeat.",
+  montage: "A 3×3 wall of live frozen frames from earlier scenes ripple-flips, then a flash cuts to a giant KH stencil with the reel’s own clips strobing inside.",
+  finale: "A whoosh shoves the letters sideways as orange liquid sloshes up over the clips, with a live % readout. Once full, KH collapses into a seal: text on a path, a ticking dial and a hire pill on the last downbeat.",
 };
 
 const pad = (value: number) => String(value).padStart(2, "0");
