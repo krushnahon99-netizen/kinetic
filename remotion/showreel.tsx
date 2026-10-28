@@ -12,6 +12,7 @@ import { Boot } from "./scenes/boot";
 import { Depth } from "./scenes/depth";
 import { Finale } from "./scenes/finale";
 import { Generative } from "./scenes/generative";
+import { KH_FILL, KhFill, type KhFillMode } from "./scenes/kh-fill";
 import { KineticType } from "./scenes/kinetic-type";
 import { Montage } from "./scenes/montage";
 import { Shape } from "./scenes/shape";
@@ -34,11 +35,20 @@ const SCENE_COMPONENTS: { id: SceneId; Component: ComponentType }[] = [
   { id: "finale", Component: Finale },
 ];
 
-/** The picture alone. The contact sheet renders up to 9 frozen copies of it, so it carries no audio. */
-export const ShowreelPicture = () => (
+/**
+ * The picture alone. The contact sheet renders up to 9 frozen copies of it, so it carries no audio.
+ * `fill` (follow-up 4 demo) replaces global 360–390 with the KH fill: the montage ends at 360 and the whip-pan is
+ * dropped. Without it this is exactly the reel.
+ */
+export const ShowreelPicture = ({ fill }: { fill?: KhFillMode }) => (
   <AbsoluteFill style={{ backgroundColor: COLORS.ink, overflow: "hidden" }}>
     {SCENE_COMPONENTS.map(({ id, Component }) => (
-      <Sequence key={id} from={SCENES[id].from} durationInFrames={SCENES[id].duration} name={id}>
+      <Sequence
+        key={id}
+        from={SCENES[id].from}
+        durationInFrames={fill && id === "montage" ? KH_FILL.from - SCENES.montage.from : SCENES[id].duration}
+        name={id}
+      >
         <Component />
       </Sequence>
     ))}
@@ -48,7 +58,13 @@ export const ShowreelPicture = () => (
     <FlashFrame at={SCENES.generative.from} color={COLORS.signal} />
     <Iris at={SCENES.depth.from} />
     <FlashFrame at={SCENES.montage.from} color={COLORS.cobalt} />
-    <WhipPan at={SCENES.finale.from} />
+    {fill ? (
+      <Sequence from={KH_FILL.from} durationInFrames={KH_FILL.duration} name="kh-fill">
+        <KhFill mode={fill} />
+      </Sequence>
+    ) : (
+      <WhipPan at={SCENES.finale.from} />
+    )}
 
     <CropMarks />
     <Credit />

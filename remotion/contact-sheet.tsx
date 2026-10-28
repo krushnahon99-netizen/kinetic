@@ -1,14 +1,16 @@
 import { AbsoluteFill, Freeze } from "remotion";
 import { COLORS, MONO_STACK, VIDEO } from "./lib/theme";
+import type { KhFillMode } from "./scenes/kh-fill";
 import { ShowreelPicture } from "./showreel";
 
-export type ContactSheetProps = { frames: number[] };
+export type ContactSheetProps = { frames: number[]; fill?: KhFillMode };
 
 /**
  * Review tool: renders up to 9 frames of the reel in a single still, so one render shows a whole sequence.
  * pnpm exec remotion still remotion/index.ts ContactSheet /tmp/stills/sheet.png --props='{"frames":[15,70,130,195]}'
+ * Add "fill":"clips" | "liquid" | "both" to the props to review the KH fill demo.
  */
-export const ContactSheet = ({ frames }: ContactSheetProps) => {
+export const ContactSheet = ({ frames, fill }: ContactSheetProps) => {
   const columns = frames.length <= 4 ? 2 : 3;
   const scale = 1 / columns;
 
@@ -29,7 +31,7 @@ export const ContactSheet = ({ frames }: ContactSheetProps) => {
           }}
         >
           <Freeze frame={frame}>
-            <ShowreelPicture />
+            <ShowreelPicture fill={fill} />
           </Freeze>
           <div
             style={{
