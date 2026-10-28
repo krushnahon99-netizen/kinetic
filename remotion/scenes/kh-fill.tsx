@@ -20,6 +20,9 @@ const SHRINK = 24; // 384: KH starts shrinking into the dot
 const FULL = 26; // 386: the letters are full
 const LAST = 29; // 389: a dot; the finale's seal pops from it at 390
 
+/** Local beats the demo page's cue sheet follows. */
+export const KH_FILL_BEATS = { push: PUSH, shrink: SHRINK } as const;
+
 const POUR_START: Record<KhFillMode, number | null> = { clips: null, liquid: 2, both: PUSH };
 
 /*
