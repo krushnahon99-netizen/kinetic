@@ -10,10 +10,12 @@ Follow-ups from the owner (2026-10-27), in their words:
 1. "I was to download the video but it says download failed"
 2. "You have to add, at first the 'Created by Krushna Hon' and animate,design, etc. At first it'll in big and then by motion graphics and effects it goes to a corner, only as Krushna Hon and stays there through whole video"
 3. Follow-up 3 (2026-10-28), the owner's answers to the open question about the remaining "v0" credits. Credits: "Yes, monogram KH" (giant title letters, cube face and finale seal show "KH"; HUD, credits list, header and page title say "Krushna Hon"; same layout and timing, so the soundtrack stays as it is). The "→ v0.app" line on the end card and in the site footer: "My GitHub profile" (github.com/krushnahon99-netizen).
+4. Follow-up 4 (2026-10-28, v0 chat `CeQNbrH16Q1`): a text-mask ending, where an animation plays inside giant "KH" letters. The owner sent a reference short (footage inside letters) and said: "Don't do of nature! I was only saying to give reference to you, just we'll use that method, and your KH idea is good, we'll add it but like any cool animation in that [...] what'll choose the inner animation of? But instead of directly inside video, we'll try it separately for demo and if confirmed then adding it! Give your ideas". Proposed fills: 1 = the reel's own clips, 2 = rising orange liquid with a % counter, 3 = sliding motion-principle words, 4 = an orange/blue particle river (nature, galaxy, fire and neon city were ruled out because their colors clash with the reel). The owner chose: "Ok, let's create 1+2". Build it as a **separate demo page** with a switcher (Reel clips / Orange liquid / 1 + 2) that plays the real ending music. Don't change the main video, homepage or MP4 until the owner approves one fill.
 
 ## Status
-Original request and follow-ups 1, 2 and 3: **100% done** (450-frame video with the "Created by Krushna Hon" credit and no "v0" credits left, web page, soundtrack, final MP4, working Download buttons). Nothing is queued.
-Last updated: 2026-10-28 by v0 (tenth account): recorded the owner's answers (**Goal** item 3), checked the remote branches (unchanged since the ninth account's audit), ran `pnpm reel:setup`, started branch `v0/kh-credits-1028` from `main` (`0d3e563`), made the video and page edits, reviewed them (one fix: title "KH" 560 → 480 px), re-rendered the MP4 and the OG image, checked the page in a browser and pushed everything to `main`.
+Original request and follow-ups 1, 2 and 3: **100% done** and in `main` (450-frame video with the "Created by Krushna Hon" credit and no "v0" credits left, web page, soundtrack, final MP4, working Download buttons).
+Follow-up 4 (KH fill demo): **5%**. The plan is recorded here (**KH fill demo** under **Decisions**). The code goes on branch `v0/kh-fill-demo-1028`, which is not merged into `main` until the owner approves a fill.
+Last updated: 2026-10-28 by v0 (eleventh account): read chats `qPs5HxsYd8S` (the tenth account, whose credits ran out while reading `CeQNbrH16Q1`) and `CeQNbrH16Q1` (an earlier account that planned the demo but wrote no code before its credits ran out), checked the remote branches (unchanged), recorded follow-up 4 here and pushed this file to `main`.
 
 ## Done
 - [x] Stack: Remotion 4.0.539 inside the existing Next.js 16 App Router + Tailwind + pnpm app
@@ -39,8 +41,12 @@ Last updated: 2026-10-28 by v0 (tenth account): recorded the owner's answers (**
 - [x] Final browser check at 1440×900: the Player autoplays muted; after clicking "Unmute sound" it keeps playing in real time (HUD TC 00:00:08:10 → 00:00:10:25 in 2.6 s) and the scene index follows (GENERATIVE → DEPTH). Header, hero, player, spec sheet, scene index and footer all lay out correctly.
 
 ## Next step
-Nothing is queued: wait for the owner's next request. There are no open questions (the "v0" credits question is answered and done, see **Goal** item 3).
-Before starting new work, confirm `main` is the newest state. A v0 import fetches only `main`, so a plain `git fetch origin` does not see other branches. Run `git ls-remote --heads origin` and compare it with the branch list in **Pitfalls**. Only a branch that is new or has moved needs a look:
+Follow-up 4: build the KH fill demo, starting at the first unticked item under **Remaining**. The work lives on branch `v0/kh-fill-demo-1028`, whose copy of this file has the live progress. Continue there:
+```bash
+git fetch origin +refs/heads/v0/kh-fill-demo-1028:refs/remotes/origin/v0/kh-fill-demo-1028 && git checkout -b v0/kh-fill-demo-1028 origin/v0/kh-fill-demo-1028
+```
+Then read this file again on that branch and call SyncGit with no arguments so v0 follows it. If the branch doesn't exist on the remote yet, create it from `main` with SyncGit (`branchName: v0/kh-fill-demo-1028`). Push demo commits to that branch only, never to `main` (the owner wants `main`'s video and site unchanged until a fill is approved).
+Before starting other new work, confirm `main` is the newest state. A v0 import fetches only `main`, so a plain `git fetch origin` does not see other branches. Run `git ls-remote --heads origin` and compare it with the branch list in **Pitfalls**. Only a branch that is new or has moved needs a look:
 ```bash
 git fetch origin +refs/heads/<branch>:refs/remotes/origin/<branch> && git log --oneline main..origin/<branch>
 ```
@@ -66,6 +72,14 @@ Change loop:
   - [x] Reviewed: contact sheet `[40,80,299,395,408,418,424,430,437]`, full frames 80 and 430, then (after the 560 → 480 title fix) a 2×2 sheet `[45,80,90,104]`. Results: "KH" clears the FIG. 01 callout; the seal type (140 px) has about 30 px of air inside the 320 px circle; the "KH" cube face fits (it faces the camera only at frame 299, mid-spin); the credits column still fits (its widest entry is "REMOTION 4.0"); the link is complete by 430, before the letterbox closes. `tsc` passes.
   - [x] Re-rendered `public/showreel/showreel.mp4`: 6,612,058 bytes, h264 1920×1080 15.000 s + AAC 15.019 s, 70 s with `--concurrency=3`. MP4 frames at 9.97 s and 14.33 s look clean, and the dev server sends `200 video/mp4` with `attachment; filename="krushna-hon-showreel-2026.mp4"`. `app/opengraph-image.jpg` was refreshed from frame 80 and shows "KH".
   - [x] Browser check at 432×632 and 1440×900: the title is "Krushna Hon — Motion Design Reel 2026", the header shows "KRUSHNA HON" on mobile and "KRUSHNA HON — MOTION REEL 2026" from `sm` up, the Player renders the "KH" seal and the KRUSHNA HON HUD, the footer link wraps cleanly at 432 px, and there are no page errors. Storyboard and decisions in this file updated; pushed to `main`.
+- [ ] Follow-up 4: the KH fill demo (see **KH fill demo**), on branch `v0/kh-fill-demo-1028`
+  - [ ] `remotion/scenes/kh-fill.tsx`: `KhFill` (prop `mode: "clips" | "liquid" | "both"`), drawn over global frames 360–390
+  - [ ] `remotion/showreel.tsx`: an optional `fill` prop on `ShowreelPicture`. Without the prop it renders exactly the current video.
+  - [ ] `remotion/kh-demo.tsx` (`KhDemo`, the reel's frames 330–450 with the audio trimmed to match) + composition `KhDemo` (120 frames) in `root.tsx`; `ContactSheet` passes an optional `fill` through
+  - [ ] Review contact sheets of all three modes; `pnpm exec tsc --noEmit`
+  - [ ] Page `/kh-demo`: `app/kh-demo/page.tsx` + `components/kh-demo/` (Player + mode switcher, autoplay muted, loop). Not linked from the homepage.
+  - [ ] Browser check of `/kh-demo`, push the branch, update this file
+  - [ ] Only after the owner approves a mode: pass it to `ShowreelPicture` in the main `Showreel`, re-render the MP4 + OG image, update the storyboard, merge into `main`
 
 ## Sandbox setup (every new sandbox)
 `pnpm reel:setup` runs all of this (`scripts/setup-sandbox.sh`):
@@ -172,7 +186,21 @@ Keep the video at 15 s / 450 frames, so every scene timing, the soundtrack grid 
 - Check the Title's "FIG. 01" callout (`right: 120, top: 150`) against the bug, and move it down if they crowd.
 - Sound: replace the 21 typing ticks with 10 (`tick(4 + k / 1.7)` for k 0–9), use backspace ticks at `20 + (k + 1) / 2.5` for k 0–9 instead of frames 20–26, and add a short riser 24–30, a whoosh panned right at 30 for the fling and a high lock tick around 41.
 
+### KH fill demo (follow-up 4, plan)
+The demo replaces only global 360–390 (the montage's second half, the whip-pan at 375 and the finale's collapse) and hands off to the existing finale seal pop at 390, so the soundtrack stays unchanged and every hit already lines up. Mode "both" (1 + 2):
+- 330–360: the reel as it is (Depth, the Cobalt flash at 345, the montage ripple).
+- 360 (12.0 s, impact + zap): a Signal flash cuts to giant "KH" (Archivo wdth 125, wght 900, centered) with a wall of real reel clips inside (frozen scene frames, like `montage.tsx`). The camera pulls back 2.4 → 1 (expoOut, 12 frames, −6° → 0°); the clips pull back less (parallax).
+- 367–373 (strobe ticks): the clips cut every 2 frames.
+- 375 (whip whoosh): a sideways push of the letters. Orange (Signal) liquid rises from the baseline during the rising tone (375–390): its surface tilts and sloshes from the push, with bubbles, and a mono % readout rides the surface. The letters are full at 386.
+- 384–389: "KH" shrinks (expoIn) into a dot at the seal center (960, `LOCK_Y` 484), which is exactly where the finale's seal pops from.
+- 390 (13.0 s, big impact): the existing finale (seal "KH", rings, credits, hire pill, link, letterbox close).
+- Mode "clips": no liquid; the clips keep strobing, then flood Signal (382–386) so the dot is orange. Mode "liquid": no clips; Bone outlines, and the liquid rises 362–386.
+- Masking technique: an isolated group of content (clips and liquid), then white "KH" on black with `mix-blend-mode: multiply` (outside the letters turns black), then a full Ink layer with `mix-blend-mode: lighten` (black turns exactly Ink). This is plain CSS, so it works in both the Player and the renderer with the document's fonts.
+- Archivo metrics (units per em 1000): ascender 878, descender −210, cap height 686. With `lineHeight: 1`, the caps sit centered in the line box (about 0.009 em high), the baseline is at +0.334 em and the cap top at −0.352 em from the box center.
+
 ## Pitfalls
+- Record every owner request and choice in this file the moment it's made, including brainstorm picks, and push it to `main`. The follow-up 4 plan once lived only in chat `CeQNbrH16Q1`, and two accounts ran out of credits digging it back up. When the owner says "don't save", that means don't change `main`'s video or site; a docs-only update of this file is still needed.
+- Replies that a v0 assistant returned through its Done tool can't be read back later: `v0_messages_list` / `v0_messages_get` return `content: ""` for them, and only the (often clipped) thinking survives.
 - Inside `remotion/`: inline styles only (the CLI renderer doesn't run Tailwind) and relative imports only (no `@/` alias).
 - Drive all motion from `useCurrentFrame()`. No CSS transitions or keyframes, no `Math.random()` (use `random(seed)` from `remotion`).
 - Always clamp `interpolate` (`extrapolateLeft: "clamp"`, `extrapolateRight: "clamp"`); `tween()` / `progress()` already do.
@@ -191,7 +219,7 @@ Keep the video at 15 s / 450 frames, so every scene timing, the soundtrack grid 
 - Don't open earlier v0 chats with the default `v0_messages_list` (20 messages): the result is huge and stalled the fifth account's run. Everything needed is in this file. If the owner asks you to read a chat, pass `limit: 2` (newest first; the returned `cursor` pages to older messages).
 - The v0 preview iframe blocks downloads (no `allow-downloads`). Test downloads at top level (agent-browser on `http://localhost:3000`) and keep the iframe fallback in `download-link.tsx`.
 - A v0 import is a single-branch clone (`remote.origin.fetch` = `main` only), so `git fetch origin` and `git checkout <branch>` cannot see other branches. List them with `git ls-remote --heads origin` and fetch one with `git fetch origin +refs/heads/<branch>:refs/remotes/origin/<branch>`.
-- Remote branches as checked on 2026-10-28 (tenth account): `main` has everything. Already in `main`: `v0/krushna-credit-1027` (eighth account), `v0/handoff-1028` (ninth) and `v0/kh-credits-1028` (tenth). Stale, never merge: `v0/kinetic-showreel` (`0b80c3e`), `v0/kinetic-showreel-7b86` (`75b6d73`), `v0/kinetic-showreel-858a` (`a2e4938`), `v0/kinetic-soundtrack` (`fae9d79`), `v0/kinetic-final-render` (`5f1c7ba`: only adds the temporary `public/__frame-test.html` from the iframe download test), `v0/project-setup-and-implementation-4053cdc1` (`7a7851f`: an early draft of `scripts/make-soundtrack.mjs`; `main` has the final one). SyncGit reuses an existing branch with the same name, so give it a new one (e.g. `v0/<topic>-<date>`) to start from `main`'s HEAD.
+- Remote branches as checked on 2026-10-28 (eleventh account, unchanged since the tenth): `main` has everything except follow-up 4. Active: `v0/kh-fill-demo-1028` (follow-up 4 demo, eleventh account; don't merge until the owner approves a fill). Already in `main`: `v0/krushna-credit-1027` (eighth account), `v0/handoff-1028` (ninth) and `v0/kh-credits-1028` (tenth). Stale, never merge: `v0/kinetic-showreel` (`0b80c3e`), `v0/kinetic-showreel-7b86` (`75b6d73`), `v0/kinetic-showreel-858a` (`a2e4938`), `v0/kinetic-soundtrack` (`fae9d79`), `v0/kinetic-final-render` (`5f1c7ba`: only adds the temporary `public/__frame-test.html` from the iframe download test), `v0/project-setup-and-implementation-4053cdc1` (`7a7851f`: an early draft of `scripts/make-soundtrack.mjs`; `main` has the final one). SyncGit reuses an existing branch with the same name, so give it a new one (e.g. `v0/<topic>-<date>`) to start from `main`'s HEAD.
 - v0's memory (`v0_memories/`) belongs to one account and does not carry over when the owner switches accounts. Keep all project knowledge in this file and on `main`.
 
 ## Verify
