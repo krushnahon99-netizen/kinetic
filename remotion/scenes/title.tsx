@@ -7,7 +7,7 @@ import { Typed, display, mono } from "../lib/type";
 const WORD = Array.from("MOTION DESIGNER");
 const SUBTITLE = "SELECTED WORK 2024—2026";
 const MONOGRAM = "KH";
-const MONOGRAM_SIZE = 560;
+const MONOGRAM_SIZE = 480;
 const WORD_SIZE = 128;
 
 const LayoutGrid = ({ frame, width, height }: { frame: number; width: number; height: number }) => {
